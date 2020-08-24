@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+ * Copyright 2017 ~ 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +15,9 @@
  */
 package main
 
-import (
-	"log"
-)
 
-func QuerySessions() {
-	log.Printf("Query sessions ...")
-}
+//stat --- connections,mem,cpu,
 
-//openSession(save)--insert===(config)----(password、rsa)
-
-//closeSession
-
-//querySessions--list
-
-//modifySession--update===(config)
-
-//delSession--delete
-
-
-
-
-
-
-
-
-
+//manager--- maxConnections,
 
 

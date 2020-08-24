@@ -4,6 +4,7 @@ import (
    "fmt"
    gossh "golang.org/x/crypto/ssh"
    "net"
+   "testing"
 )
 
 type Cli struct {
