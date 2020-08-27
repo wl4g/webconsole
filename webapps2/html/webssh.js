@@ -42,7 +42,7 @@ function readFile(element_id, res_id) {
 
 function get_term_size() {
     let init_width = 9;
-	let init_height = 17;
+	let init_height = 18;
 	let windows_width = $(window).width();
 	let windows_height = $(window).height();
     return {
@@ -84,7 +84,19 @@ function get_connect_info() {
 	}
 }
 
-function ws_connect() {
+let term;
+let socket;
+
+function ws_connect(id) {
+	debugger
+	$('#sessions').hide();
+	if(term){
+		term.dispose();
+	}
+	if(socket){
+		socket.close();
+	}
+
     let connect_info = get_connect_info();
 	// Terminal.applyAddon(attach);
 	// Terminal.applyAddon(fit);
@@ -93,7 +105,7 @@ function ws_connect() {
 	// Terminal.applyAddon(terminado);
 	// Terminal.applyAddon(webLinks);
 	// Terminal.applyAddon(zmodem);
-    let term = new Terminal({
+	term = new Terminal({
 		rendererType: 'canvas',
 		cols: connect_info.cols,
 		rows: connect_info.rows,
@@ -114,7 +126,7 @@ function ws_connect() {
 	// toastr.options.progressBar = true;
 	toastr.options.positionClass = 'toast-top-right';
 
-    let socket = new WebSocket('ws://localhost:8888' + '/ws2/10');
+    socket = new WebSocket('ws://localhost:8888' + '/ws2/'+id);
     // let socket = new WebSocket('ws://127.0.0.1:80/ws/webssh', ['webssh']);
 	socket.binaryType = "arraybuffer";
 
@@ -314,7 +326,7 @@ function ws_connect() {
 			socket.send(JSON.stringify({ type: "publickey", data: utf8_to_b64(connect_info.ssh_key) }));
 		}*/
 
-		socket.send(JSON.stringify({ type: "connect", data: utf8_to_b64("10") }));
+		socket.send(JSON.stringify({ type: "connect", data: utf8_to_b64(id) }));
 		socket.send(JSON.stringify({ type: "resize", cols: connect_info.cols, rows: connect_info.rows }));
 
 
@@ -367,8 +379,9 @@ function ws_connect() {
 
 	// 关闭连接
 	socket.onclose = function (e) {
+		debugger
 		console.log(e);
-		term.write('disconnect');
+		//term.write('disconnect');
 		// term.detach();
 		// term.destroy();
 	};
