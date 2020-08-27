@@ -7,7 +7,12 @@ let commonKeyboardOptions = {
     physicalKeyboardHighlight: true,
     syncInstanceInputs: true,
     mergeDisplay: true,
-    debug: true
+    debug: true,
+    //useTouchEvents: true
+    newLineOnEnter: true,
+    disableButtonHold: true,
+    onKeyReleased: button => onKeyReleased(button),
+
 };
 
 let keyboard = new Keyboard(".simple-keyboard-main", {
@@ -51,59 +56,6 @@ let keyboard = new Keyboard(".simple-keyboard-main", {
     }
 });
 
-let keyboardControlPad = new Keyboard(".simple-keyboard-control", {
-    ...commonKeyboardOptions,
-    layout: {
-        default: [
-            "{prtscr} {scrolllock} {pause}",
-            "{insert} {home} {pageup}",
-            "{delete} {end} {pagedown}"
-        ]
-    }
-});
-
-let keyboardArrows = new Keyboard(".simple-keyboard-arrows", {
-    ...commonKeyboardOptions,
-    layout: {
-        default: ["{arrowup}", "{arrowleft} {arrowdown} {arrowright}"]
-    }
-});
-
-let keyboardNumPad = new Keyboard(".simple-keyboard-numpad", {
-    ...commonKeyboardOptions,
-    layout: {
-        default: [
-            "{numlock} {numpaddivide} {numpadmultiply}",
-            "{numpad7} {numpad8} {numpad9}",
-            "{numpad4} {numpad5} {numpad6}",
-            "{numpad1} {numpad2} {numpad3}",
-            "{numpad0} {numpaddecimal}"
-        ]
-    }
-});
-
-let keyboardNumPadEnd = new Keyboard(".simple-keyboard-numpadEnd", {
-    ...commonKeyboardOptions,
-    layout: {
-        default: ["{numpadsubtract}", "{numpadadd}", "{numpadenter}"]
-    }
-});
-
-/**
- * Physical Keyboard support
- * Whenever the input is changed with the keyboard, updating SimpleKeyboard's internal input
- */
-/*document.addEventListener("keydown", event => {
-  // Disabling keyboard input, as some keys (like F5) make the browser lose focus.
-  // If you're like to re-enable it, comment the next line and uncomment the following ones
-  event.preventDefault();
-});*/
-
-/*document.querySelector(".input").addEventListener("input", event => {
-    //let input = document.querySelector(".input").value;
-    keyboard.setInput(input);
-});*/
-
 
 function onChange(input) {
     //document.querySelector(".input").value = input;
@@ -123,8 +75,16 @@ function onKeyPress(button) {
         button === "{shiftleft}" ||
         button === "{shiftright}" ||
         button === "{capslock}"
-    )
+    ){
         handleShift();
+    }else{
+        let code = String.fromCharCode(3);
+        socket.send(JSON.stringify({ type: "stdin", data: utf8_to_b64(code) }));
+    }
+}
+
+function onKeyReleased(button) {
+    console.log("simple-keyboard button released", button);
 }
 
 function handleShift() {

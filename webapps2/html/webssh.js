@@ -126,7 +126,8 @@ function ws_connect(id) {
 	// toastr.options.progressBar = true;
 	toastr.options.positionClass = 'toast-top-right';
 
-    socket = new WebSocket('ws://localhost:8888' + '/ws2/'+id);
+
+    socket = new WebSocket('ws://'+window.location.hostname + ':8888/ws2/'+id);
     // let socket = new WebSocket('ws://127.0.0.1:80/ws/webssh', ['webssh']);
 	socket.binaryType = "arraybuffer";
 
