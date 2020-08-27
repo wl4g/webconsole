@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"net/http"
 	"strconv"
+	"xcloud-webconsole/pkg/dao"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -54,7 +55,11 @@ func WsSsh(c *gin.Context) {
 	//	return
 	//}
 
-	client, err := NewSshClient()
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	session := dao.GetSessionById(id);
+
+	client, err := NewSshClient(session)
 	if wshandleError(wsConn, err) {
 		return
 	}

@@ -13,11 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main
+package api
 
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+	"strconv"
+	"xcloud-webconsole/pkg/dao"
+)
 
 //stat --- connections,mem,cpu,
-
 //manager--- maxConnections,
+
+func Add(c *gin.Context){
+	name := c.PostForm("name")
+	address := c.PostForm("address")
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+	sshKey := c.PostForm("sshKey")
+
+	session := new(dao.Session)
+	session.Name = name
+	session.Address = address
+	session.Username = username
+	session.Password = password
+	session.SshKey = sshKey
+	id := dao.InsertSession(session)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "OK",
+		"id": id,
+	})
+}
+
+func List(c *gin.Context){
+
+	sessions :=dao.SessionList()
+	c.JSON(http.StatusOK, gin.H{
+		"status": "OK",
+		"sessions" : sessions,
+	})
+}
+
+func Del(c *gin.Context){
+	idStr := c.PostForm("id")
+	id, _ := strconv.ParseInt(idStr, 10, 64)
+	dao.DelSession(id)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "OK",
+	})
+}
+
 
 

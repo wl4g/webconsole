@@ -21,6 +21,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"xcloud-webconsole/pkg/api"
 	"xcloud-webconsole/pkg/core"
 )
 
@@ -28,6 +29,11 @@ func main() {
 	r := gin.Default()
 	r.Use(Cors())
 	r.GET("/ws/:id", core.WsSsh)
+
+	r.POST("/admin/add", api.Add)
+	r.POST("/admin/del", api.Del)
+	r.GET("/admin/list", api.List)
+
 	_ = r.Run(":8888") // default listen and serve on 0.0.0.0:8080.
 
 	log.Printf("WebConsole starting...")

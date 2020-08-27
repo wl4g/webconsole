@@ -3,7 +3,6 @@ package core
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"github.com/mitchellh/go-homedir"
 	"golang.org/x/crypto/ssh"
 	"io/ioutil"
@@ -11,22 +10,29 @@ import (
 	"os"
 	"strings"
 	"time"
+	"xcloud-webconsole/pkg/dao"
 )
 
-func NewSshClient() (*ssh.Client, error) {
+func NewSshClient(session *dao.Session) (*ssh.Client, error) {
 	config := &ssh.ClientConfig{
 		Timeout:         time.Second * 5,
-		User:            "root",
+		User:            session.Username,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(), //这个可以， 但是不够安全
 		//HostKeyCallback: hostKeyCallBackFunc(h.Host),
 	}
-	//if h.Type == "password" {
-	config.Auth = []ssh.AuthMethod{ssh.Password("hwj13535248668")}
-	//} else {
-	//	config.Auth = []ssh.AuthMethod{publicKeyAuthFunc(h.Key)}
-	//}
-	addr := fmt.Sprintf("%s:%d", "vjay.pw", 30022)
-	c, err := ssh.Dial("tcp", addr, config)
+
+	if session.SshKey != "" {
+		config.Auth = []ssh.AuthMethod{publicKeyAuthFuncWithKey(session.SshKey)}
+	}else{
+		config.Auth = []ssh.AuthMethod{ssh.Password(session.Password)}
+	}
+
+	//addr := fmt.Sprintf("%s:%d", "vjay.pw", 30022)
+	if !strings.Contains(session.Address,":"){//fix
+		session.Address = session.Address + ":22"
+	}
+
+	c, err := ssh.Dial("tcp", session.Address, config)
 	if err != nil {
 		return nil, err
 	}
@@ -65,6 +71,16 @@ func hostKeyCallBackFunc(host string) ssh.HostKeyCallback {
 	return ssh.FixedHostKey(hostKey)
 }
 
+func publicKeyAuthFuncWithKey(key string) ssh.AuthMethod {
+	var b []byte = []byte(key)
+	// Create the Signer for this private key.
+	signer, err := ssh.ParsePrivateKey(b)
+	if err != nil {
+		log.Fatal("ssh key signer failed", err)
+	}
+	return ssh.PublicKeys(signer)
+}
+
 func publicKeyAuthFunc(kPath string) ssh.AuthMethod {
 	keyPath, err := homedir.Expand(kPath)
 	if err != nil {
@@ -81,6 +97,7 @@ func publicKeyAuthFunc(kPath string) ssh.AuthMethod {
 	}
 	return ssh.PublicKeys(signer)
 }
+
 func runCommand(client *ssh.Client, command string) (stdout string, err error) {
 	session, err := client.NewSession()
 	if err != nil {

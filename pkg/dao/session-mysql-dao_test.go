@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+ * Copyright 2017 ~ 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,33 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package api
+package dao
 
-import (
-	"log"
-)
+import "testing"
 
-func QuerySessions() {
-	log.Printf("Query sessions ...")
+func TestSessionSelect(t *testing.T) {
+	SessionList();
 }
 
-//openSession(save)--insert===(config)----(password、rsa)
+func TestGetSessionById(t *testing.T) {
+	GetSessionById(2);
+}
 
-//closeSession
-
-//querySessions--list
-
-//modifySession--update===(config)
-
-//delSession--delete
-
-
-
-
-
-
-
-
-
-
-
+func TestInsertSession(t *testing.T) {
+	session := new(Session)
+	session.Name = "test1";
+	session.Address = "10.0.0.160:30022";
+	session.Username = "sshconsole";
+	session.Password = "123456";
+	session.SshKey = "";
+	InsertSession(session)
+}
