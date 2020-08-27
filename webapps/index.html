@@ -9,6 +9,8 @@
 	<link rel="stylesheet" href="css/xterm.css" />
 	<script src="js/xterm.js"></script>
 	<script src="js/jquery-3.5.1.min.js"></script>
+	<script src="js/zmodem/zmodem.devel.js"></script>
+	<script src="js/myzmodem.js"></script>
 </head>
 <body>
 	Welcome to XCloud WebConsole !
@@ -42,8 +44,8 @@
 
 	<script>
 
-		const server_admin_url = "http://10.0.0.132:8888/admin";
-		const server_ws_url = "ws://10.0.0.132:8888/ws";
+		const server_admin_url = "http://10.0.0.136:8888/admin";
+		const server_ws_url = "ws://10.0.0.136:8888/ws";
 		let term;
 		let socket;
 
@@ -180,10 +182,17 @@
 					//term.clear();
 					term.dispose();
 				};
+
+
 			};
 		}
 
 		function handleParseBlob(b,callback) {
+
+			if (typeof b === 'object') {
+				zsentry.consume(b);
+			}
+
 			var reader = new FileReader();
 			reader.onload = function(event){
 				callback(reader.result);
@@ -194,6 +203,14 @@
 		//init
 		$('input:radio[name=type]')[0].checked = true;
 		changeType(1);
+
+		////===========
+
+
+
+
+
+
 
 	</script>
 </body>
