@@ -1,6 +1,5 @@
-const server_admin_url = "http://10.0.0.136:8888/admin";
-const server_ws_url = "ws://10.0.0.136:8888/ws";
 
+const server_admin_url = "http://"+window.location.hostname+":8888/admin";
 
 function openAdd() {
     const node = $('#add');

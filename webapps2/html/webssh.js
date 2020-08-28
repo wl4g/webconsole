@@ -88,7 +88,6 @@ let term;
 let socket;
 
 function ws_connect(id) {
-	debugger
 	$('#sessions').hide();
 	if(term){
 		term.dispose();
@@ -380,9 +379,7 @@ function ws_connect(id) {
 
 	// 关闭连接
 	socket.onclose = function (e) {
-		debugger
 		console.log(e);
-		//term.write('disconnect');
 		// term.detach();
 		// term.destroy();
 	};

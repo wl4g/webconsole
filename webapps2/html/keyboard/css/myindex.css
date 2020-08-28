@@ -135,3 +135,7 @@ input {
 .hg-button.hg-functionBtn.hg-button-space {
     width: 350px;
 }
+
+.ctrl-active{
+    background: #efefef !important;
+}
