@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
     <title>webssh</title>
     <link rel="icon" href="./favicon.ico"/>
     <link href="./bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet">
@@ -10,8 +15,8 @@
     <link href="./xterm/4.8.1/xterm.css" rel="stylesheet">
     <link href="./toastr/2.1.4.7/toastr.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="keyboard/css/index.css">
-    <link rel="stylesheet" href="keyboard/css/myindex.css">
+    <link rel="stylesheet" href="keyboard/expand-keyboard.css">
+
 
     <style>
         .input-width {
@@ -55,16 +60,32 @@ Welcome to XCloud WebConsole !
 	<div id="terminal"></div>
 </div>
 
-<div class="keyboardContainer">
-    <div class="simple-keyboard-main"></div>
+<div class="expand-keyboard-container">
+    <div>
+        <button id="keyboard-esc" class="expand-keyboard">Esc</button>
+        <button id="keyboard-ctrl" class="expand-keyboard">Ctrl</button>
+        <button id="keyboard-gang" class="expand-keyboard">-</button>
+        <button id="keyboard-up" class="expand-keyboard">↑</button>
+        <button id="keyboard-paste" class="expand-keyboard">粘贴</button>
+        <button id="keyboard-sh-left" class="expand-keyboard">sh+←</button>
+    </div>
+    <div>
+        <button id="keyboard-tab" class="expand-keyboard">Tab</button>
+        <button id="keyboard-pie" class="expand-keyboard">/</button>
+        <button id="keyboard-left" class="expand-keyboard">←</button>
+        <button id="keyboard-down" class="expand-keyboard">↓</button>
+        <button id="keyboard-right" class="expand-keyboard">→</button>
+        <button id="keyboard-sh-right" class="expand-keyboard">sh+→</button>
+    </div>
+
+
 </div>
 
 
 
 <script type="text/javascript" src="./jquery/3.4.1/jquery.min.js"></script>
 <script type="text/javascript" src="./zmodem/zmodem.devel.js"></script>
-<!--script type="text/javascript" src="./xterm/3.14.5/xterm.min.js"></script-->
-<!--script type="text/javascript" src="./xterm/4.4.0/xterm.min.js"></script-->
+
 <script type="text/javascript" src="./xterm/4.8.1/xterm.js"></script>
 <script type="text/javascript" src="./bootstrap/3.3.7/bootstrap.min.js"></script>
 <script type="text/javascript" src="./bootbox/5.4.0/bootbox.min.js"></script>
@@ -73,8 +94,9 @@ Welcome to XCloud WebConsole !
 <script type="text/javascript" src="./webssh.js"></script>
 <script type="text/javascript" src="./admin.js"></script>
 
-<script src="keyboard/index.js"></script>
-<script src="keyboard/mykeyboard.js"></script>
+<script src="keyboard/expand-keyboard.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
 
 </body>
 </html>

@@ -109,6 +109,7 @@ function ws_connect(id) {
 		cols: connect_info.cols,
 		rows: connect_info.rows,
 		useStyle: true,
+		//rendererType: 'dom',
 		cursorBlink: true,
 		theme: {
 			foreground: '#7e9192',
@@ -340,7 +341,9 @@ function ws_connect(id) {
 
         // v4 xterm.js
         term.onData(function (data) {
-            socket.send(JSON.stringify({ type: "stdin", data: utf8_to_b64(data) }));
+
+			handleCtrl(data);
+            //socket.send(JSON.stringify({ type: "stdin", data: utf8_to_b64(data) }));
         });
     };
 

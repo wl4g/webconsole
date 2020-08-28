@@ -47,6 +47,8 @@ var (
 
 	// zmodem 取消 \x18\x18\x18\x18\x18\x08\x08\x08\x08\x08
 	ZModemCancel = []byte{24, 24, 24, 24, 24, 8, 8, 8, 8, 8}
+
+	WhileKeyCode = []string{"+","%"}
 )
 
 func ByteContains(x, y []byte) (n []byte, contain bool)  {
@@ -446,11 +448,19 @@ func (ws *WebSSH) server() error {
 
 		// 为了兼容 zmodem， stdin 消息协议暂时无用，客户端数据都以二进制格式发送过来
 		case messageTypeStdin:
+
 			if stdin == nil {
 				ws.logger.Printf("stdin wait login")
 				continue
 			}
-			data, _ := url.QueryUnescape(string(msg.Data))
+
+			var data = string(msg.Data)
+
+			//fix bug: '+' urlcoding
+			/*if !IsContain(WhileKeyCode,data) {
+				data, _  = url.QueryUnescape(data)
+			}*/
+
 			_, err = stdin.Write([]byte(data))
 			if err != nil {
 				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("write to stdin error\r\n")})
@@ -693,4 +703,13 @@ func (ws *WebSSH) transformOutput(session *ssh.Session, conn *websocket.Conn) er
 	go copyToMessage(messageTypeStdout, stdout, stdin)
 	go copyToMessage(messageTypeStderr, stderr, stdin)
 	return nil
+}
+
+func IsContain(items []string, item string) bool {
+	for _, eachItem := range items {
+		if eachItem == item {
+			return true
+		}
+	}
+	return false
 }

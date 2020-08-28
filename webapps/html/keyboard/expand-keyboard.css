@@ -1,0 +1,20 @@
+
+.expand-keyboard-container{
+    width: 100%;
+
+    background-color: #9fa6ff;
+    /*opacity:0.5;*/
+
+}
+
+.expand-keyboard-container button{
+    width: 16.2%;
+}
+
+.expand-keyboard {
+
+}
+
+.ctrl-active{
+    background: #efefef !important;
+}
