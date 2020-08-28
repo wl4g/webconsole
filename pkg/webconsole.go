@@ -29,7 +29,7 @@ func main() {
 	r := gin.Default()
 	r.Use(Cors())
 
-	r.GET("/ws2/:id", core.WsSsh)
+	r.GET("/ws/:id", core.WsSsh)
 
 	r.POST("/admin/add", api.Add)
 	r.POST("/admin/del", api.Del)
