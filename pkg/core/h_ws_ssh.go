@@ -1,14 +1,12 @@
 package core
 
 import (
-	"bytes"
-	"net/http"
-	"strconv"
-	"xcloud-webconsole/pkg/dao"
-
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/sirupsen/logrus"
+	"log"
+	"net/http"
+	"os"
+	"time"
 )
 
 var upGrader = websocket.Upgrader{
@@ -19,86 +17,34 @@ var upGrader = websocket.Upgrader{
 	},
 }
 
-// handle webSocket connection.
-// first,we establish a ssh connection to ssh server when a webSocket comes;
-// then we deliver ssh data via ssh connection between browser and ssh server.
-// That is, read webSocket data from browser (e.g. 'ls' command) and send data to ssh server via ssh connection;
-// the other hand, read returned ssh data from ssh server and write back to browser via webSocket API.
+
 func WsSsh(c *gin.Context) {
-	wsConn, err := upGrader.Upgrade(c.Writer, c.Request, nil)
-	if handleError(c, err) {
-		return
+	id := c.Request.Header.Get("Sec-WebSocket-Key")
+	webssh := NewWebSSH()
+	// term 可以使用 ansi, linux, vt100, xterm, dumb，除了 dumb外其他都有颜色显示, 默认 xterm
+	webssh.SetTerm(TermXterm)
+	webssh.SetBuffSize(8192)
+	webssh.SetId(id)
+	webssh.SetConnTimeOut(5 * time.Second)
+	webssh.SetLogger(log.New(os.Stderr, "[webssh] ", log.Ltime|log.Ldate))
+
+	upGrader := websocket.Upgrader{
+		// cross origin domain
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+		// 处理 Sec-WebSocket-Protocol Header
+		//Subprotocols: []string{r.Header.Get("Sec-WebSocket-Protocol")},
+		Subprotocols: []string{"webssh"},
+		ReadBufferSize: 8192,
+		WriteBufferSize: 8192,
 	}
-	defer wsConn.Close()
 
-	//cIp := c.ClientIP()
-	//
-	//userM, err := getAuthUser(c)
-	//if handleError(c, err) {
-	//	return
-	//}
+	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 
-	cols, err := strconv.Atoi(c.DefaultQuery("cols", "120"))
-	if wshandleError(wsConn, err) {
-		return
+	if err != nil {
+		log.Panic(err)
 	}
-	rows, err := strconv.Atoi(c.DefaultQuery("rows", "32"))
-	if wshandleError(wsConn, err) {
-		return
-	}
-	//idx, err := parseParamID(c)
-	//if wshandleError(wsConn, err) {
-	//	return
-	//}
-	//mc, err := models.MachineFind(idx)
-	//if wshandleError(wsConn, err) {
-	//	return
-	//}
 
-	idStr := c.Param("id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
-	session := dao.GetSessionById(id);
-
-	client, err := NewSshClient(session)
-	if wshandleError(wsConn, err) {
-		return
-	}
-	defer client.Close()
-	//startTime := time.Now()
-	ssConn, err := NewSshConn(cols, rows, client)
-
-	if wshandleError(wsConn, err) {
-		return
-	}
-	defer ssConn.Close()
-
-	quitChan := make(chan bool, 3)
-
-	var logBuff = new(bytes.Buffer)
-
-	// most messages are ssh output, not webSocket input
-	go ssConn.ReceiveWsMsg(wsConn, logBuff, quitChan)
-	go ssConn.SendComboOutput(wsConn, quitChan)
-	go ssConn.SessionWait(quitChan)
-
-	<-quitChan
-	//write logs
-	//xtermLog := models.TermLog{
-	//	EndTime:     time.Now(),
-	//	StartTime:   startTime,
-	//	UserId:      userM.ID,
-	//	Log:         logBuff.String(),
-	//	MachineId:   idx,
-	//	MachineName: mc.Name,
-	//	MachineIp:   mc.Ip,
-	//	MachineHost: mc.Host,
-	//	UserName:    userM.Username,
-	//	Ip:          cIp,
-	//}
-	//
-	//err = xtermLog.Create()
-	//if wshandleError(wsConn, err) {
-	//	return
-	//}
-	logrus.Info("websocket finished")
+	webssh.AddWebsocket(ws)
 }
