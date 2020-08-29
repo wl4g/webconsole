@@ -10,8 +10,10 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.4.2
+	github.com/wl4g/super-devops-umc-agent v0.0.0-20190806081809-af621d72a805
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	golang.org/x/tools v0.0.0-20191029190741-b9c20aec41a5
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+	gopkg.in/yaml.v2 v2.2.2
 )

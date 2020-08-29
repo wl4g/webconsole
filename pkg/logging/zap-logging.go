@@ -16,12 +16,13 @@
 package logging
 
 import (
+	"os"
+	"time"
 	"xcloud-webconsole/pkg/config"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"os"
-	"time"
 )
 
 //
@@ -78,28 +79,29 @@ func newZapLoggerWrapper(filePath string, level zapcore.Level, maxSize int, maxB
 // Zap logger creation.
 // -------------------------
 
+// InitZapLogger ...
 func InitZapLogger() {
 	var logItems = config.GlobalConfig.Logging.LogItems
 
 	// Init main logger.
-	var mainLog = logItems[constant.DefaultLogMain]
+	var mainLog = logItems[config.DefaultLogMain]
 	Main = newZapLoggerWrapper(
 		mainLog.FileName,
 		parseLogLevel(mainLog.Level),
 		mainLog.Policy.MaxSize,
 		mainLog.Policy.MaxBackups,
 		mainLog.Policy.RetentionDays,
-		true, constant.DefaultLogMain)
+		true, config.DefaultLogMain)
 
 	// Init receive logger.
-	var receiveLog = logItems[constant.DefaultLogReceive]
+	var receiveLog = logItems[config.DefaultLogReceive]
 	Receive = newZapLoggerWrapper(
 		receiveLog.FileName,
 		parseLogLevel(receiveLog.Level),
 		receiveLog.Policy.MaxSize,
 		receiveLog.Policy.MaxBackups,
 		receiveLog.Policy.RetentionDays,
-		true, constant.DefaultLogReceive)
+		true, config.DefaultLogReceive)
 }
 
 //
