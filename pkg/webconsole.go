@@ -18,28 +18,42 @@ package main
 import (
 	"log"
 	"net/http"
-	"xcloud-webconsole/pkg/api"
-	"xcloud-webconsole/pkg/core"
+	"strconv"
+	config "xcloud-webconsole/pkg/config"
+	ssh2 "xcloud-webconsole/pkg/modules/ssh2"
 
-	"github.com/gin-gonic/gin"
+	gin "github.com/gin-gonic/gin"
 )
 
 func main() {
 	log.Printf("WebConsole starting...")
 
+	// Start webserver
+	startConsoleWebServer()
+}
+
+// startConsoleWebServer ...
+func startConsoleWebServer() *gin.Engine {
 	engine := gin.Default()
 	engine.Use(createCorsHandler())
 
-	engine.GET("/ws/:id", core.WsSsh)
-	engine.POST("/admin/add", api.Add)
-	engine.POST("/admin/del", api.Del)
-	engine.GET("/admin/list", api.List)
+	// Register SSH2 handlers
+	registerSSH2Handlers(engine)
 
-	err := engine.Run(":8888") // Default listen on 0.0.0.0:8080.
+	err := engine.Run(config.GlobalConfig.Server.Listen) // Default listen on 0.0.0.0:8080.
 	if err != nil {
 		log.Panic(err)
 	}
 
+	return engine
+}
+
+// registerSSH2Handlers ...
+func registerSSH2Handlers(engine *gin.Engine) {
+	engine.GET(ssh2.DefaultSSH2APIWebSocketURI, ssh2.NewWebsocketConnectionFunc)
+	engine.GET(ssh2.DefaultSSH2APISessionQueryURI, ssh2.QuerySSH2SessionsFunc)
+	engine.POST(ssh2.DefaultSSH2APISessionAddURI, ssh2.AddSSH2SessionFunc)
+	engine.POST(ssh2.DefaultSSH2APISessionDeleteURI, ssh2.DeleteSSH2SessionFunc)
 }
 
 // createCorsHandler ...
@@ -64,14 +78,14 @@ func createCorsHandler() gin.HandlerFunc {
 
 		// Sets default access control policy for CORS requests
 		if origin != "" {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-			c.Header("Access-Control-Allow-Origin", "*")
-			c.Header("Access-Control-Allow-Methods", "POST,GET,OPTIONS,PUT,DELETE,UPDATE")
-			c.Header("Access-Control-Allow-Headers", "")
-			c.Header("Access-Control-Expose-Headers", "FooBar")   // 跨域关键设置 让浏览器可以解析
-			c.Header("Access-Control-Max-Age", "172800")          // 缓存请求信息 单位为秒
-			c.Header("Access-Control-Allow-Credentials", "false") //  跨域请求是否需要带cookie信息 默认设置为true
-			c.Set("content-type", "application/json")             // 设置返回格式是json
+			c.Writer.Header().Set("Access-Control-Allow-Origin", config.GlobalConfig.Server.Cors.AllowOrigins)
+			c.Header("Access-Control-Allow-Origin", config.GlobalConfig.Server.Cors.AllowOrigins)
+			c.Header("Access-Control-Allow-Credentials", strconv.FormatBool(config.GlobalConfig.Server.Cors.AllowCredentials))
+			c.Header("Access-Control-Allow-Methods", config.GlobalConfig.Server.Cors.AllowMethods)
+			c.Header("Access-Control-Allow-Headers", config.GlobalConfig.Server.Cors.AllowHeaders)
+			c.Header("Access-Control-Expose-Headers", config.GlobalConfig.Server.Cors.ExposeHeaders) // 跨域关键设置让浏览器可以解析
+			c.Header("Access-Control-Max-Age", strconv.Itoa(config.GlobalConfig.Server.Cors.MaxAge))
+			c.Set("Content-Type", "application/json")
 		}
 
 		// Execute the next handler

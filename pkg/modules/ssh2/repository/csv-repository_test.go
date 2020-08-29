@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package config
+package repository
 
-// ---------------------
-// Web Console server properties
-// ---------------------
+import "testing"
 
-// ServerProperties ...
-type ServerProperties struct {
-	Listen string         `yaml:"listen"`
-	Cors   CorsProperties `yaml:"cors"`
+func TestGetSessionByIdCsv(t *testing.T) {
+	// TODO
+	// new(CsvRepository{}).GetSessionByID(1)
 }
 
-// CorsProperties ...
-type CorsProperties struct {
-	AllowOrigins     string `"yaml:"allow-origins"`
-	AllowCredentials bool   `"yaml:"allow-credentials"`
-	AllowMethods     string `"yaml:"allow-methods"`
-	AllowHeaders     string `"yaml:"allow-headers"`
-	ExposeHeaders    string `"yaml:"expose-headers"`
-	MaxAge           int    `"yaml:"max-age"` // Second
+func TestSaveSessionCsv(t *testing.T) {
+	session := new(SessionBean)
+	session.Name = "test1"
+	session.Address = "10.0.0.160:30022"
+	session.Username = "sshconsole"
+	session.Password = "123456"
+	session.SSHPrivateKey = ""
+
+	// TODO
+	// new(CsvRepository{}).SaveSessionCsv(session)
 }

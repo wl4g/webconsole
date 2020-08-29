@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package config
+package main
 
-// ---------------------
-// Web Console server properties
-// ---------------------
+import (
+	"log"
+)
 
-// ServerProperties ...
-type ServerProperties struct {
-	Listen string         `yaml:"listen"`
-	Cors   CorsProperties `yaml:"cors"`
+//
+// TODO !!!
+//
+
+// WebRDPDispatcher In order to realize the remote image control protocol compatible with windows RDP based on Web。
+type WebRDPDispatcher struct {
+	id string
 }
 
-// CorsProperties ...
-type CorsProperties struct {
-	AllowOrigins     string `"yaml:"allow-origins"`
-	AllowCredentials bool   `"yaml:"allow-credentials"`
-	AllowMethods     string `"yaml:"allow-methods"`
-	AllowHeaders     string `"yaml:"allow-headers"`
-	ExposeHeaders    string `"yaml:"expose-headers"`
-	MaxAge           int    `"yaml:"max-age"` // Second
+// ServeStart ...
+func ServeStart() {
+	log.Printf("RDP dispatching starting...")
 }

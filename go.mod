@@ -1,19 +1,16 @@
 module xcloud-webconsole
 
-go 1.14
+go 1.13
 
 require (
-	github.com/gin-gonic/gin v1.4.0
+	github.com/gin-gonic/gin v1.6.3
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/gorilla/websocket v1.4.0
+	github.com/gorilla/websocket v1.4.2
 	github.com/json-iterator/go v1.1.10
-	github.com/mitchellh/go-homedir v1.1.0
-	github.com/pkg/errors v0.8.1
-	github.com/sirupsen/logrus v1.4.2
-	github.com/wl4g/super-devops-umc-agent v0.0.0-20190806081809-af621d72a805
+	github.com/pkg/errors v0.9.1
+	github.com/sqs/goreturns v0.0.0-20181028201513-538ac6014518
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
-	golang.org/x/tools v0.0.0-20191029190741-b9c20aec41a5
+	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
-	gopkg.in/yaml.v2 v2.2.2
+	gopkg.in/yaml.v2 v2.3.0
 )

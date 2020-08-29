@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ~ 2025 the original author or authors<Wanglsir@gmail.com, 983708408@qq.com>.
+ * Copyright 2017 ~ 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package utils
+package repository
 
-import (
-	"io/ioutil"
-	"os"
-)
+import "testing"
 
-// Read file to string.
-func ReadFileToString(filePth string) string {
-	f, err := os.Open(filePth)
-	if err != nil {
-		panic(err)
-	}
-	s, _ := ioutil.ReadAll(f)
-	return string(s)
+func TestSessionSelect(t *testing.T) {
+	// TODO
+	// new(MysqlRepository{}).QuerySessionList()
+}
+
+func TestGetSessionById(t *testing.T) {
+	// TODO
+	// new(MysqlRepository{}).GetSessionByID(2)
+}
+
+func TestSaveSession(t *testing.T) {
+	session := new(SessionBean)
+	session.Name = "test1"
+	session.Address = "10.0.0.160:30022"
+	session.Username = "sshconsole"
+	session.Password = "123456"
+	session.SSHPrivateKey = ""
+
+	// TODO
+	// new(MysqlRepository{}).SaveSession(session)
 }

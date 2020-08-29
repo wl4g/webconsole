@@ -15,22 +15,27 @@
  */
 package config
 
+import "time"
+
 // ---------------------
-// Web Console server properties
+// Repository DAO properties
 // ---------------------
 
-// ServerProperties ...
-type ServerProperties struct {
-	Listen string         `yaml:"listen"`
-	Cors   CorsProperties `yaml:"cors"`
+// RepositoryProperties ...
+type RepositoryProperties struct {
+	Mysql MysqlProperties `yaml:"mysql"`
+	Csv   CsvProperties   `yaml:"csv"`
 }
 
-// CorsProperties ...
-type CorsProperties struct {
-	AllowOrigins     string `"yaml:"allow-origins"`
-	AllowCredentials bool   `"yaml:"allow-credentials"`
-	AllowMethods     string `"yaml:"allow-methods"`
-	AllowHeaders     string `"yaml:"allow-headers"`
-	ExposeHeaders    string `"yaml:"expose-headers"`
-	MaxAge           int    `"yaml:"max-age"` // Second
+// MysqlProperties ...
+type MysqlProperties struct {
+	// e.g: user:password@tcp(host:port)/database?charset=utf-8
+	DbConnectStr    string        `"yaml:"dbconnectstr"`
+	MaxOpenConns    int           `"yaml:"max-open-conns"`
+	MaxIdleConns    int           `"yaml:"max-idle-conns"`
+	ConnMaxLifetime time.Duration `"yaml:"conn-max-lifetime"` // Second
+}
+
+// CsvProperties ...
+type CsvProperties struct {
 }

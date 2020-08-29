@@ -15,22 +15,22 @@
  */
 package config
 
-// ---------------------
-// Web Console server properties
-// ---------------------
+import "time"
 
-// ServerProperties ...
-type ServerProperties struct {
-	Listen string         `yaml:"listen"`
-	Cors   CorsProperties `yaml:"cors"`
-}
+const (
+	// -------------------------------
+	// Repository DAO constants.
+	// -------------------------------
 
-// CorsProperties ...
-type CorsProperties struct {
-	AllowOrigins     string `"yaml:"allow-origins"`
-	AllowCredentials bool   `"yaml:"allow-credentials"`
-	AllowMethods     string `"yaml:"allow-methods"`
-	AllowHeaders     string `"yaml:"allow-headers"`
-	ExposeHeaders    string `"yaml:"expose-headers"`
-	MaxAge           int    `"yaml:"max-age"` // Second
-}
+	// DefaultMysqlConnectStr ...
+	DefaultMysqlConnectStr = "root:root@tcp(127.0.0.1:3306)/webconsole?charset=utf-8"
+
+	// DefaultMysqlMaxOpenConns ...
+	DefaultMysqlMaxOpenConns = 80
+
+	// DefaultMysqlMaxIdleConns ...
+	DefaultMysqlMaxIdleConns = 10
+
+	// DefaultMysqlConnMaxLifetime ...
+	DefaultMysqlConnMaxLifetime = 90 * time.Second
+)

@@ -1,24 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-
-
-    <title>webssh</title>
-    <link rel="icon" href="./favicon.ico"/>
-    <link href="./bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet">
-    <!--link href="./xterm/3.14.5/xterm.min.css" rel="stylesheet"-->
-    <!--link href="./xterm/4.4.0/xterm.min.css" rel="stylesheet"-->
-    <link href="./xterm/4.8.1/xterm.css" rel="stylesheet">
-    <link href="./toastr/2.1.4.7/toastr.min.css" rel="stylesheet">
-
-    <link rel="stylesheet" href="keyboard/expand-keyboard.css">
-
-
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0,
+            maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>webssh</title>
+        <link rel="icon" href="./favicon.ico" />
+        <link href="./bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet">
+        <link href="./xterm/4.8.1/xterm.css" rel="stylesheet">
+        <link href="./toastr/2.1.4.7/toastr.min.css" rel="stylesheet">
+        <link href="keyboard/expand-keyboard.css" rel="stylesheet">
+        <style>
         .input-width {
             width: 20%;
             display: inline-block;
@@ -28,75 +21,64 @@
             display: none;
         }
     </style>
-</head>
-<body>
+    </head>
+    <body>
+        <h3>Welcome to XCloud WebConsole !</h3>
 
-Welcome to XCloud WebConsole !
-<button onclick="openAdd()">ADD</button>
-<button onclick="openSession()">Sessions</button>
+        <button onclick="openAdd()">ADD</button>
+        <button onclick="openSession()">Sessions</button>
 
-<div id="add" hidden>
-    <label for="alias">Alias:</label><input id="alias"/><br>
-    <label for="address">Address:</label><input id="address"/><br>
-    <label for="username">Username:</label><input id="username"/><br>
+        <div id="add" hidden>
+            <label for="alias">Alias:</label><input id="alias" /><br>
+            <label for="address">Address:</label><input id="address" /><br>
+            <label for="username">Username:</label><input id="username" /><br>
+            <label><input name="type" type="radio" value="1" onchange="changeType(1)" />密码</label>
+            <label><input name="type" type="radio" value="2" onchange="changeType(2)" />密钥</label>
+            <div id="passwordDiv">
+                <label for="password">Password:</label><input type="password" id="password" /><br>
+            </div>
+            <div id="sshKeyDiv">
+                <label for="sshKey">SshKey:</label><textarea id="sshKey" rows="2"></textarea><input
+                    id="sshKeyFile"
+                    type="file" onchange="changeFile()"><br>
+            </div>
+            <button onclick="save()">Save</button>
+        </div>
+        <div id="sessions" hidden>
+            <ul id="sessionsul" style="margin-block-start: 0;margin-block-end:0;">
+            </ul>
+        </div>
+        <div id="webssh-terminal" class="hide">
+            <div id="terminal"></div>
+        </div>
+        <div class="expand-keyboard-container">
+            <div>
+                <button id="keyboard-esc" class="expand-keyboard">Esc</button>
+                <button id="keyboard-ctrl" class="expand-keyboard">Ctrl</button>
+                <button id="keyboard-gang" class="expand-keyboard">-</button>
+                <button id="keyboard-up" class="expand-keyboard">↑</button>
+                <button id="keyboard-paste" class="expand-keyboard">粘贴</button>
+                <button id="keyboard-sh-left" class="expand-keyboard">sh+←</button>
+            </div>
+            <div>
+                <button id="keyboard-tab" class="expand-keyboard">Tab</button>
+                <button id="keyboard-pie" class="expand-keyboard">/</button>
+                <button id="keyboard-left" class="expand-keyboard">←</button>
+                <button id="keyboard-down" class="expand-keyboard">↓</button>
+                <button id="keyboard-right" class="expand-keyboard">→</button>
+                <button id="keyboard-sh-right" class="expand-keyboard">sh+→</button>
+            </div>
+        </div>
 
-    <label><input name="type" type="radio" value="1" onchange="changeType(1)"/>密码</label>
-    <label><input name="type" type="radio" value="2" onchange="changeType(2)"/>密钥</label>
-    <div id="passwordDiv">
-        <label for="password">Password:</label><input type="password" id="password"/><br>
-    </div>
-    <div id="sshKeyDiv">
-        <label for="sshKey">SshKey:</label><textarea id="sshKey" rows="2"></textarea><input id="sshKeyFile" type="file" onchange="changeFile()"><br>
-    </div>
-
-    <button onclick="save()">Save</button>
-</div>
-<div id="sessions" hidden>
-    <ul id="sessionsul" style="margin-block-start: 0;margin-block-end: 0;">
-    </ul>
-</div>
-
-<div id="webssh-terminal" class="hide">
-	<div id="terminal"></div>
-</div>
-
-<div class="expand-keyboard-container">
-    <div>
-        <button id="keyboard-esc" class="expand-keyboard">Esc</button>
-        <button id="keyboard-ctrl" class="expand-keyboard">Ctrl</button>
-        <button id="keyboard-gang" class="expand-keyboard">-</button>
-        <button id="keyboard-up" class="expand-keyboard">↑</button>
-        <button id="keyboard-paste" class="expand-keyboard">粘贴</button>
-        <button id="keyboard-sh-left" class="expand-keyboard">sh+←</button>
-    </div>
-    <div>
-        <button id="keyboard-tab" class="expand-keyboard">Tab</button>
-        <button id="keyboard-pie" class="expand-keyboard">/</button>
-        <button id="keyboard-left" class="expand-keyboard">←</button>
-        <button id="keyboard-down" class="expand-keyboard">↓</button>
-        <button id="keyboard-right" class="expand-keyboard">→</button>
-        <button id="keyboard-sh-right" class="expand-keyboard">sh+→</button>
-    </div>
-
-
-</div>
-
-
-
-<script type="text/javascript" src="./jquery/3.4.1/jquery.min.js"></script>
-<script type="text/javascript" src="./zmodem/zmodem.devel.js"></script>
-
-<script type="text/javascript" src="./xterm/4.8.1/xterm.js"></script>
-<script type="text/javascript" src="./bootstrap/3.3.7/bootstrap.min.js"></script>
-<script type="text/javascript" src="./bootbox/5.4.0/bootbox.min.js"></script>
-<script type="text/javascript" src="./toastr/2.1.4.7/toastr.min.js"></script>
-
-<script type="text/javascript" src="./webssh.js"></script>
-<script type="text/javascript" src="./admin.js"></script>
-
-<script src="keyboard/expand-keyboard.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
-
-</body>
+        <script type="text/javascript" src="./jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" src="./zmodem/zmodem.devel.js"></script>
+        <script type="text/javascript" src="./xterm/4.8.1/xterm.js"></script>
+        <script type="text/javascript" src="./bootstrap/3.3.7/bootstrap.min.js"></script>
+        <script type="text/javascript" src="./bootbox/5.4.0/bootbox.min.js"></script>
+        <script type="text/javascript" src="./toastr/2.1.4.7/toastr.min.js"></script>
+        <script type="text/javascript" src="./webssh.js"></script>
+        <script type="text/javascript" src="./admin.js"></script>
+        <script src="keyboard/expand-keyboard.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+    </body>
 </html>

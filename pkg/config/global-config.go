@@ -19,15 +19,16 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"xcloud-webconsole/pkg/utils"
-	"xcloud-webconsole/pkg/config"
+	tools "xcloud-webconsole/pkg/utils"
+
 	"gopkg.in/yaml.v2"
 )
 
 // GlobalProperties ...
 type GlobalProperties struct {
-	Server  ServerProperties  `yaml:"server"`
-	Logging LoggingProperties `yaml:"logging"`
+	Server     ServerProperties     `yaml:"server"`
+	Repository RepositoryProperties `yaml:"repository"`
+	Logging    LoggingProperties    `yaml:"logging"`
 }
 
 var (
@@ -59,35 +60,44 @@ func InitGlobalConfig(path string) {
 // Create default configuration properties.
 func createDefaultProperties() *GlobalProperties {
 	globalConfig := &GlobalProperties{
-		Server: {
-			Listen: constant.DefaultServeListen,
-			Cors:{
-				AllowOrigin      :constant.DefaultCorsOrigin,
-				AllowCredentials :constant.DefaultCorsCredentials,
-				AllowMethods     :constant.DefaultCorsMethods,
-				AllowHeaders     :constant.DefaultCorsHeaders,
-				ExposeHeaders    :constant.DefaultCorsExposeHeaders,
-				MaxAge           :constant.DefaultCorsMaxAge,
-			}
+		Server: ServerProperties{
+			Listen: DefaultServeListen,
+			Cors: CorsProperties{
+				AllowOrigins:     DefaultCorsAllowOrigins,
+				AllowCredentials: DefaultCorsAllowCredentials,
+				AllowMethods:     DefaultCorsAllowMethods,
+				AllowHeaders:     DefaultCorsAllowHeaders,
+				ExposeHeaders:    DefaultCorsExposeHeaders,
+				MaxAge:           DefaultCorsMaxAge,
+			},
+		},
+		Repository: RepositoryProperties{
+			Mysql: MysqlProperties{
+				DbConnectStr:    DefaultMysqlConnectStr,
+				MaxOpenConns:    DefaultMysqlMaxOpenConns,
+				MaxIdleConns:    DefaultMysqlMaxIdleConns,
+				ConnMaxLifetime: DefaultMysqlConnMaxLifetime,
+			},
+			Csv: CsvProperties{},
 		},
 		Logging: LoggingProperties{
 			LogItems: map[string]LogItemProperties{
-				constant.DefaultLogMain: {
-					FileName: constant.DefaultLogDir + constant.DefaultLogMain + ".log",
-					Level:    constant.DefaultLogLevel,
+				DefaultLogMain: {
+					FileName: DefaultLogDir + DefaultLogMain + ".log",
+					Level:    DefaultLogLevel,
 					Policy: PolicyProperties{
-						RetentionDays: constant.DefaultLogRetentionDays,
-						MaxBackups:    constant.DefaultLogMaxBackups,
-						MaxSize:       constant.DefaultLogMaxSize,
+						RetentionDays: DefaultLogRetentionDays,
+						MaxBackups:    DefaultLogMaxBackups,
+						MaxSize:       DefaultLogMaxSize,
 					},
 				},
-				constant.DefaultLogReceive: {
-					FileName: constant.DefaultLogDir + constant.DefaultLogReceive + ".log",
-					Level:    constant.DefaultLogLevel,
+				DefaultLogReceive: {
+					FileName: DefaultLogDir + DefaultLogReceive + ".log",
+					Level:    DefaultLogLevel,
 					Policy: PolicyProperties{
-						RetentionDays: constant.DefaultLogRetentionDays,
-						MaxBackups:    constant.DefaultLogMaxBackups,
-						MaxSize:       constant.DefaultLogMaxSize,
+						RetentionDays: DefaultLogRetentionDays,
+						MaxBackups:    DefaultLogMaxBackups,
+						MaxSize:       DefaultLogMaxSize,
 					},
 				},
 			},
@@ -102,5 +112,5 @@ func afterPropertiesSet(globalConfig *GlobalProperties) {
 
 // RefreshConfig Refresh global config.
 func RefreshConfig(config *GlobalProperties) {
-	common.CopyProperties(&config, &GlobalConfig)
+	tools.CopyProperties(&config, &GlobalConfig)
 }

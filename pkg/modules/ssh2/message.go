@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package config
+package ssh2
 
-// ---------------------
-// Web Console server properties
-// ---------------------
+type messageType string
 
-// ServerProperties ...
-type ServerProperties struct {
-	Listen string         `yaml:"listen"`
-	Cors   CorsProperties `yaml:"cors"`
-}
+const (
+	messageTypeAddr      = "addr"
+	messageTypeTerm      = "term"
+	messageTypeLogin     = "login"
+	messageTypePassword  = "password"
+	messageTypePublickey = "publickey"
+	messageTypeStdin     = "stdin"
+	messageTypeStdout    = "stdout"
+	messageTypeStderr    = "stderr"
+	messageTypeResize    = "resize"
+	messageTypeIgnore    = "ignore"
+	messageTypeConsole   = "console"
+	messageTypeAlert     = "alert"
+	messageTypeConnect   = "connect"
+)
 
-// CorsProperties ...
-type CorsProperties struct {
-	AllowOrigins     string `"yaml:"allow-origins"`
-	AllowCredentials bool   `"yaml:"allow-credentials"`
-	AllowMethods     string `"yaml:"allow-methods"`
-	AllowHeaders     string `"yaml:"allow-headers"`
-	ExposeHeaders    string `"yaml:"expose-headers"`
-	MaxAge           int    `"yaml:"max-age"` // Second
+type message struct {
+	Type messageType `json:"type"`
+	Data []byte      `json:"data"`
+	Cols int         `json:"cols,omitempty"`
+	Rows int         `json:"rows,omitempty"`
 }

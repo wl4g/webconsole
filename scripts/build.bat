@@ -1,5 +1,5 @@
 rem
-rem Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+rem Copyright 2017 ~ 2025 the original author or authors<Wanglsir@gmail.com, 983708408@qq.com>.
 rem
 rem Licensed under the Apache License, Version 2.0 (the "License");
 rem you may not use this file except in compliance with the License.

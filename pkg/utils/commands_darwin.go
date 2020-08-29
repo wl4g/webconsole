@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package common
+package utils
 
 import (
 	"bytes"
@@ -21,6 +21,7 @@ import (
 	"os/exec"
 )
 
+// ExecShell
 // Blocking the execution of shell commands, waiting for execution
 // to complete and returning standard output.
 func ExecShell(s string) (string, error) {
