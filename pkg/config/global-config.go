@@ -26,6 +26,7 @@ import (
 
 // GlobalProperties ...
 type GlobalProperties struct {
+	Admin      AdminProperties      `yaml:"admin"`
 	Server     ServerProperties     `yaml:"server"`
 	Repository RepositoryProperties `yaml:"repository"`
 	Logging    LoggingProperties    `yaml:"logging"`
@@ -60,6 +61,9 @@ func InitGlobalConfig(path string) {
 // Create default configuration properties.
 func createDefaultProperties() *GlobalProperties {
 	globalConfig := &GlobalProperties{
+		Admin: AdminProperties{
+			Listen: DefaultAdminServeListen,
+		},
 		Server: ServerProperties{
 			Listen: DefaultServeListen,
 			Cors: CorsProperties{

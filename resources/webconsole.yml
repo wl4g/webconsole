@@ -29,9 +29,15 @@ server:
 repository:
   mysql:
     # user:password@tcp(host:port)/database?charset=utf-8
-    # dbconnectstr: gzsm:gzsm@%#jh?@tcp(10.0.0.160:3306)/devops_dev?charset=utf-8
     dbconnectstr: gzsm:gzsm@%#jh?@tcp(127.0.0.1:3306)/devops_dev?charset=utf-8
+    # 10.0.0.160:3306
   csv:
+
+### -------------------------------------
+### Admin configuration.
+### -------------------------------------
+admin:
+  listen: :16089
 
 ### -------------------------------------
 ### Logger configuration.

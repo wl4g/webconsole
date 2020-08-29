@@ -8,5 +8,7 @@ A lightweight enterprise Web Console, supporting SSH2/Telnet protocol, etc
 - Enhanced support for mobile terminal copy, paste, fast forward, backward and other key combination command, user-friendly operation habits
 
 ### TODO
+- Enhance the administrator functions of webconsole service, such as its own health/metrics/indicator(CPU/Mem/Network/Connections...) And more detailed indicators
+- In order to realize the remote image UI control protocol compatible with windows RDP(Remote Desktop Protocol) based on Web
+- In order to realize the remote image UI control protocol compatible with windows RFB(Remote FrameBuffer) based on Web
 - In order to realize remote command control protocol compatible with Telnet protocol based on Web
-- In order to realize the remote image UI control protocol compatible with windows RDP based on Web

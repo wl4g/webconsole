@@ -16,24 +16,50 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"xcloud-webconsole/pkg/admin"
 	config "xcloud-webconsole/pkg/config"
+	"xcloud-webconsole/pkg/logging"
 	ssh2 "xcloud-webconsole/pkg/modules/ssh2"
 
 	gin "github.com/gin-gonic/gin"
 )
 
-func main() {
-	log.Printf("WebConsole starting...")
+const (
+	defaultConfigPath = "/etc/webconsole.yml"
+)
 
-	// Start webserver
-	startConsoleWebServer()
+func main() {
+	confPath := defaultConfigPath
+	// Parsing configuration path
+	flag.StringVar(&confPath, "c", defaultConfigPath, "WebConsole config path.")
+	flag.Usage()
+	flag.Parse()
+	fmt.Printf("Initializing config path for '%s'\n", confPath)
+
+	// Init global config.
+	config.InitGlobalConfig(confPath)
+
+	// Init zap logger.
+	logging.InitZapLogger()
+
+	// Start webserver...
+	go startConsoleWebServer()
+
+	// Start admin server
+	go admin.ServeStart()
+
+	select {}
 }
 
 // startConsoleWebServer ...
 func startConsoleWebServer() *gin.Engine {
+	log.Printf("WebConsole starting...")
+
 	engine := gin.Default()
 	engine.Use(createCorsHandler())
 

@@ -43,7 +43,7 @@ func (that *MysqlRepository) InitMysqlRepository() {
 		mysqlConfig.MaxIdleConns,
 		mysqlConfig.ConnMaxLifetime,
 	)
-	that.mysqlDB = *mydb
+	that.mysqlDB = mydb
 	//defer mysqlDB.Close();
 
 	if dberr != nil {

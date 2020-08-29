@@ -23,9 +23,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//stat --- connections,mem,cpu,
-//manager--- maxConnections,
-
 // AddSSH2SessionFunc ...
 func AddSSH2SessionFunc(c *gin.Context) {
 	name := c.PostForm("name")
