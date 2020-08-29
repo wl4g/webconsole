@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+ * Copyright 2017 ~ 2025 the original author or authors<Wanglsir@gmail.com, 983708408@qq.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,24 +20,24 @@ const (
 	// Log constants.
 	// -------------------------------
 
-	// Default log service 'main'.
+	// DefaultLogMain Default log service 'main'.
 	DefaultLogMain = "main"
 
-	// Default log service 'receive'.
+	// DefaultLogReceive Default log service 'receive'.
 	DefaultLogReceive = "receive"
 
-	// Default log directory.
+	// DefaultLogDir Default log directory.
 	DefaultLogDir = "./log/"
 
-	// Default log level
+	// DefaultLogLevel Default log level
 	DefaultLogLevel = "INFO"
 
-	// Default log retention days.
+	// DefaultLogRetentionDays Default log retention days.
 	DefaultLogRetentionDays = 7
 
-	// Default log max backup numbers.
+	// DefaultLogMaxBackups Default log max backup numbers.
 	DefaultLogMaxBackups = 30
 
-	// Default log max size(MB).
+	// DefaultLogMaxSize Default log max size(MB).
 	DefaultLogMaxSize = 128
 )

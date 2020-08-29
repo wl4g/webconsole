@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+ * Copyright 2017 ~ 2025 the original author or authors<Wanglsir@gmail.com, 983708408@qq.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,14 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/wl4g/super-devops-umc-agent/pkg/common"
-	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
+	"xcloud-webconsole/pkg/utils"
+	"xcloud-webconsole/pkg/config"
 	"gopkg.in/yaml.v2"
 )
 
 // GlobalProperties ...
 type GlobalProperties struct {
+	Server  ServerProperties  `yaml:"server"`
 	Logging LoggingProperties `yaml:"logging"`
 }
 
@@ -37,7 +38,7 @@ var (
 // InitGlobalConfig global config properties.
 func InitGlobalConfig(path string) {
 	// Create default config.
-	GlobalConfig = *createDefault()
+	GlobalConfig = *createDefaultProperties()
 
 	conf, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -55,9 +56,20 @@ func InitGlobalConfig(path string) {
 	afterPropertiesSet(&GlobalConfig)
 }
 
-// Create default config.
-func createDefault() *GlobalProperties {
+// Create default configuration properties.
+func createDefaultProperties() *GlobalProperties {
 	globalConfig := &GlobalProperties{
+		Server: {
+			Listen: constant.DefaultServeListen,
+			Cors:{
+				AllowOrigin      :constant.DefaultCorsOrigin,
+				AllowCredentials :constant.DefaultCorsCredentials,
+				AllowMethods     :constant.DefaultCorsMethods,
+				AllowHeaders     :constant.DefaultCorsHeaders,
+				ExposeHeaders    :constant.DefaultCorsExposeHeaders,
+				MaxAge           :constant.DefaultCorsMaxAge,
+			}
+		},
 		Logging: LoggingProperties{
 			LogItems: map[string]LogItemProperties{
 				constant.DefaultLogMain: {

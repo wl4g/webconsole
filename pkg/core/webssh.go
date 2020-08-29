@@ -1,12 +1,24 @@
+/**
+ * Copyright 2017 ~ 2025 the original author or authors<Wanglsir@gmail.com, 983708408@qq.com>.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package core
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/pkg/errors"
-	"golang.org/x/crypto/ssh"
 	"io"
 	"log"
 	"net"
@@ -15,6 +27,10 @@ import (
 	"strings"
 	"time"
 	"xcloud-webconsole/pkg/dao"
+
+	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
+	"golang.org/x/crypto/ssh"
 )
 
 var (
@@ -48,10 +64,10 @@ var (
 	// zmodem 取消 \x18\x18\x18\x18\x18\x08\x08\x08\x08\x08
 	ZModemCancel = []byte{24, 24, 24, 24, 24, 8, 8, 8, 8, 8}
 
-	WhileKeyCode = []string{"+","%"}
+	WhileKeyCode = []string{"+", "%"}
 )
 
-func ByteContains(x, y []byte) (n []byte, contain bool)  {
+func ByteContains(x, y []byte) (n []byte, contain bool) {
 	index := bytes.Index(x, y)
 	if index == -1 {
 		return
@@ -63,23 +79,23 @@ func ByteContains(x, y []byte) (n []byte, contain bool)  {
 
 // WebSSH 管理 Websocket 和 ssh 连接
 type WebSSH struct {
-	id string
-	buffSize uint32
-	term string
-	sshConn net.Conn
-	websocket *websocket.Conn
-	connTimeout time.Duration
-	logger *log.Logger
+	id                               string
+	buffSize                         uint32
+	term                             string
+	sshConn                          net.Conn
+	websocket                        *websocket.Conn
+	connTimeout                      time.Duration
+	logger                           *log.Logger
 	DisableZModemSZ, DisableZModemRZ bool
-	ZModemSZ, ZModemRZ, ZModemSZOO bool
+	ZModemSZ, ZModemRZ, ZModemSZOO   bool
 }
 
 // WebSSH 构造函数
 func NewWebSSH() *WebSSH {
 	return &WebSSH{
-		buffSize: DefaultBuffSize,
-		logger:   DefaultLogger,
-		term: DefaultTerm,
+		buffSize:    DefaultBuffSize,
+		logger:      DefaultLogger,
+		term:        DefaultTerm,
 		connTimeout: DefaultConnTimeout,
 	}
 }
@@ -146,7 +162,7 @@ func (ws *WebSSH) AddSSHConn(conn net.Conn) {
 
 // 处理 websocket 连接发送过来的数据
 func (ws *WebSSH) server() error {
-	defer func(){
+	defer func() {
 		_ = ws.websocket.Close()
 	}()
 
@@ -160,7 +176,7 @@ func (ws *WebSSH) server() error {
 	config := ssh.ClientConfig{
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         ws.connTimeout,
-		Config: sshConfig,
+		Config:          sshConfig,
 	}
 
 	var session *ssh.Session
@@ -206,13 +222,13 @@ func (ws *WebSSH) server() error {
 			id, _ := strconv.ParseInt(data, 10, 64)
 			sessionDB := dao.GetSessionById(id)
 
-			if !strings.Contains(sessionDB.Address,":"){//fix
+			if !strings.Contains(sessionDB.Address, ":") { //fix
 				sessionDB.Address = sessionDB.Address + ":22"
 			}
 			conn, err := net.DialTimeout("tcp", sessionDB.Address, ws.connTimeout)
 			if err != nil {
 				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("connect error\r\n")})
-				return errors.Wrap(err, "connect addr " + sessionDB.Address + " error")
+				return errors.Wrap(err, "connect addr "+sessionDB.Address+" error")
 			}
 			ws.AddSSHConn(conn)
 			defer func() {
@@ -222,7 +238,7 @@ func (ws *WebSSH) server() error {
 			//==================step2==================
 			config.User = sessionDB.Username
 			//==================step3==================
-			if(sessionDB.SshKey!=""){
+			if sessionDB.SshKey != "" {
 				pemStrings := sessionDB.SshKey
 				ws.logger.Printf("(%s) auth with privatekey ******", ws.id)
 				pemBytes := []byte(pemStrings)
@@ -231,7 +247,7 @@ func (ws *WebSSH) server() error {
 				signer, err := ssh.ParsePrivateKey(pemBytes)
 				if err != nil {
 					_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("parse publickey erro\r\n")})
-					return errors.Wrap(err,"parse publickey error")
+					return errors.Wrap(err, "parse publickey error")
 				}
 
 				config.Auth = append(config.Auth, ssh.PublicKeys(signer))
@@ -265,7 +281,7 @@ func (ws *WebSSH) server() error {
 				}
 
 				hasAuth = true
-			}else{
+			} else {
 				password := sessionDB.Password
 				config.Auth = append(config.Auth, ssh.Password(password))
 				session, err = ws.newSSHXtermSession(ws.sshConn, &config, msg)
@@ -301,7 +317,6 @@ func (ws *WebSSH) server() error {
 				hasAuth = true
 			}
 
-
 		case messageTypeAddr:
 			if hasAddr {
 				continue
@@ -311,7 +326,7 @@ func (ws *WebSSH) server() error {
 			conn, err := net.DialTimeout("tcp", addr, ws.connTimeout)
 			if err != nil {
 				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("connect error\r\n")})
-				return errors.Wrap(err, "connect addr " + addr + " error")
+				return errors.Wrap(err, "connect addr "+addr+" error")
 			}
 			ws.AddSSHConn(conn)
 			defer func() {
@@ -411,7 +426,7 @@ func (ws *WebSSH) server() error {
 			signer, err := ssh.ParsePrivateKey(pemBytes)
 			if err != nil {
 				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("parse publickey erro\r\n")})
-				return errors.Wrap(err,"parse publickey error")
+				return errors.Wrap(err, "parse publickey error")
 			}
 
 			config.Auth = append(config.Auth, ssh.PublicKeys(signer))
@@ -493,7 +508,6 @@ func (ws *WebSSH) newSSHXtermSession(conn net.Conn, config *ssh.ClientConfig, ms
 	//	return nil, errors.Wrap(err, "open session error")
 	//}
 
-
 	c, chans, reqs, err := ssh.NewClientConn(conn, conn.RemoteAddr().String(), config)
 	if err != nil {
 		return nil, errors.Wrap(err, "open client error")
@@ -503,10 +517,10 @@ func (ws *WebSSH) newSSHXtermSession(conn net.Conn, config *ssh.ClientConfig, ms
 		return nil, errors.Wrap(err, "open session error")
 	}
 	modes := ssh.TerminalModes{
-		ssh.ECHO: 1,
+		ssh.ECHO:          1,
 		ssh.TTY_OP_ISPEED: 8192,
 		ssh.TTY_OP_OSPEED: 8192,
-		ssh.IEXTEN: 0,
+		ssh.IEXTEN:        0,
 	}
 	if msg.Cols <= 0 || msg.Cols > 500 {
 		msg.Cols = 40
@@ -607,20 +621,20 @@ func (ws *WebSSH) transformOutput(session *ssh.Session, conn *websocket.Conn) er
 						if startIndex != -1 {
 							endIndex := bytes.Index(buff[:n], ZModemRZCtrlEnd1)
 							if endIndex != -1 {
-								ctrl := append(ZModemRZCtrlStart, buff[startIndex + len(ZModemRZCtrlStart):endIndex]...)
+								ctrl := append(ZModemRZCtrlStart, buff[startIndex+len(ZModemRZCtrlStart):endIndex]...)
 								ctrl = append(ctrl, ZModemRZCtrlEnd1...)
 								conn.WriteMessage(websocket.BinaryMessage, ctrl)
-								info := append(buff[:startIndex], buff[endIndex + len(ZModemRZCtrlEnd1):n]...)
+								info := append(buff[:startIndex], buff[endIndex+len(ZModemRZCtrlEnd1):n]...)
 								if len(info) != 0 {
 									conn.WriteJSON(&message{Type: messageTypeConsole, Data: info})
 								}
 							} else {
 								endIndex = bytes.Index(buff[:n], ZModemRZCtrlEnd2)
 								if endIndex != -1 {
-									ctrl := append(ZModemRZCtrlStart, buff[startIndex + len(ZModemRZCtrlStart):endIndex]...)
+									ctrl := append(ZModemRZCtrlStart, buff[startIndex+len(ZModemRZCtrlStart):endIndex]...)
 									ctrl = append(ctrl, ZModemRZCtrlEnd2...)
 									conn.WriteMessage(websocket.BinaryMessage, ctrl)
-									info := append(buff[:startIndex], buff[endIndex + len(ZModemRZCtrlEnd2):n]...)
+									info := append(buff[:startIndex], buff[endIndex+len(ZModemRZCtrlEnd2):n]...)
 									if len(info) != 0 {
 										conn.WriteJSON(&message{Type: messageTypeConsole, Data: info})
 									}

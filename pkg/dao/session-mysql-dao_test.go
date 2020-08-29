@@ -18,19 +18,19 @@ package dao
 import "testing"
 
 func TestSessionSelect(t *testing.T) {
-	SessionList();
+	SessionList()
 }
 
 func TestGetSessionById(t *testing.T) {
-	GetSessionById(2);
+	GetSessionById(2)
 }
 
 func TestInsertSession(t *testing.T) {
 	session := new(Session)
-	session.Name = "test1";
-	session.Address = "10.0.0.160:30022";
-	session.Username = "sshconsole";
-	session.Password = "123456";
-	session.SshKey = "";
+	session.Name = "test1"
+	session.Address = "10.0.0.160:30022"
+	session.Username = "sshconsole"
+	session.Password = "123456"
+	session.SshKey = ""
 	InsertSession(session)
 }

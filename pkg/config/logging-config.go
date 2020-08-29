@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+ * Copyright 2017 ~ 2025 the original author or authors<Wanglsir@gmail.com, 983708408@qq.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,19 @@ package config
 // Logging properties
 // ---------------------
 
-// Multi log properties.
+// LoggingProperties Multi log properties.
 type LoggingProperties struct {
 	LogItems map[string]LogItemProperties `yaml:"log-items"`
 }
 
-// LogItem properties.
+// LogItemProperties LogItem properties.
 type LogItemProperties struct {
 	FileName string           `yaml:"file"`
 	Level    string           `yaml:"level"`
 	Policy   PolicyProperties `yaml:"policy"`
 }
 
-// Logging archive policy.
+// PolicyProperties Logging archive policy.
 type PolicyProperties struct {
 	RetentionDays int `yaml:"retention-days"`
 	MaxBackups    int `yaml:"max-backups"`

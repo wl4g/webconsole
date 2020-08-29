@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package common
+package core
 
-import (
-	"io/ioutil"
-	"os"
+const (
+	TermLinux         = "linux"
+	TermAnsi          = "ansi"
+	TermScoAnsi       = "scoansi"
+	TermXterm         = "xterm"
+	TermXterm256Color = "xterm-256color"
+	TermVt100         = "vt100"
+	TermVt102         = "vt102"
+	TermVt220         = "vt220"
+	TermVt320         = "vt320"
+	TermWyse50        = "wyse50"
+	TermWyse60        = "wyse60"
+	TermDumb          = "dumb"
 )
-
-// Read file to string.
-func ReadFileToString(filePth string) string {
-	f, err := os.Open(filePth)
-	if err != nil {
-		panic(err)
-	}
-	s, _ := ioutil.ReadAll(f)
-	return string(s)
-}

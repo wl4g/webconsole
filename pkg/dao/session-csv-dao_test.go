@@ -18,19 +18,19 @@ package dao
 import "testing"
 
 func TestSessionSelectCsv(t *testing.T) {
-	GetSessionTotalCsv();
+	// GetSessionTotalCsv();
 }
 
 func TestGetSessionByIdCsv(t *testing.T) {
-	GetSessionByIdCsv(1);
+	GetSessionByIdCsv(1)
 }
 
 func TestInsertSessionCsv(t *testing.T) {
 	session := new(Session)
-	session.Name = "test1";
-	session.Address = "10.0.0.160:30022";
-	session.Username = "sshconsole";
-	session.Password = "123456";
-	session.SshKey = "";
+	session.Name = "test1"
+	session.Address = "10.0.0.160:30022"
+	session.Username = "sshconsole"
+	session.Password = "123456"
+	session.SshKey = ""
 	InsertSessionCsv(session)
 }

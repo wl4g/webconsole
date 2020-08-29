@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package common
+package config
 
-import (
-	"io/ioutil"
-	"os"
-)
+// ---------------------
+// Web Console server properties
+// ---------------------
 
-// Read file to string.
-func ReadFileToString(filePth string) string {
-	f, err := os.Open(filePth)
-	if err != nil {
-		panic(err)
-	}
-	s, _ := ioutil.ReadAll(f)
-	return string(s)
+// ServerProperties ...
+type ServerProperties struct {
+	Listen string         `yaml:"listen"`
+	Cors   CorsProperties `yaml:"cors"`
+}
+
+// CorsProperties ...
+type CorsProperties struct {
+	AllowOrigin      string `"yaml:"allow-origin"`
+	AllowCredentials bool   `"yaml:"allow-credentials"`
+	AllowMethods     string `"yaml:"allow-methods"`
+	AllowHeaders     string `"yaml:"allow-headers"`
+	ExposeHeaders    string `"yaml:"expose-headers"`
+	MaxAge           int32  `"yaml:"max-age"` // Second
 }
