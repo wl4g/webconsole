@@ -63,3 +63,16 @@ func DeleteSSH2SessionFunc(c *gin.Context) {
 		"status": "OK",
 	})
 }
+
+const (
+	// DefaultSSH2APIBaseURI ssh2 console base URI.
+	DefaultSSH2APIBaseURI = "/terminal/"
+	// DefaultSSH2APIWebSocketURI ssh2 console websocket connection URI.
+	DefaultSSH2APIWebSocketURI = DefaultSSH2APIBaseURI + "ws/:id"
+	// DefaultSSH2APISessionQueryURI ssh2 console session query URI.
+	DefaultSSH2APISessionQueryURI = DefaultSSH2APIBaseURI + "session/list"
+	// DefaultSSH2APISessionAddURI ssh2 console session create URI.
+	DefaultSSH2APISessionAddURI = DefaultSSH2APIBaseURI + "session/create"
+	// DefaultSSH2APISessionDeleteURI ssh2 console session delete URI.
+	DefaultSSH2APISessionDeleteURI = DefaultSSH2APIBaseURI + "session/delete"
+)
