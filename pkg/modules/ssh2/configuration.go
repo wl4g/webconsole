@@ -34,28 +34,13 @@ const (
 	DefaultSSH2APISessionDeleteURI = DefaultSSH2APIBaseURI + "session/delete"
 )
 
-const (
-	TermLinux         = "linux"
-	TermAnsi          = "ansi"
-	TermScoAnsi       = "scoansi"
-	TermXterm         = "xterm"
-	TermXterm256Color = "xterm-256color"
-	TermVt100         = "vt100"
-	TermVt102         = "vt102"
-	TermVt220         = "vt220"
-	TermVt320         = "vt320"
-	TermWyse50        = "wyse50"
-	TermWyse60        = "wyse60"
-	TermDumb          = "dumb"
-)
-
 var (
-	//DefaultTerm ...
-	DefaultTerm = TermXterm
-	//DefaultConnTimeout ...
+	// DefaultTerm ...
+	DefaultTerm = "xterm"
+	// DefaultConnTimeout ...
 	DefaultConnTimeout = 15 * time.Second
-	//DefaultLogger ...
+	// DefaultLogger ...
 	DefaultLogger = log.New(ioutil.Discard, "[webssh] ", log.Ltime|log.Ldate)
-	//DefaultBuffSize ...
+	// DefaultBuffSize ...
 	DefaultBuffSize = uint32(8192)
 )

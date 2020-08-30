@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ssh2
+package config
 
-type messageType string
+// SSH2TermProperties ...
+type SSH2TermProperties struct {
+	// 可设置 ansi/linux/vt100/xterm/dumb, 除dumb外其他都有颜色显示, 默认xterm
+	PtyTermType             string `yaml:"pty-term-type"`
+	PtyTermConnTimeout      uint32 `yaml:"pty-term-conn-timeout"` // Second
+	PtyWSTransferBufferSize uint32 `yaml:"pty-ws-transfer-buffer-size"`
+}
 
 const (
-	messageTypeAddr      = "addr"
-	messageTypeTerm      = "term"
-	messageTypeLogin     = "login"
-	messageTypePassword  = "password"
-	messageTypePublickey = "publickey"
-	messageTypeStdin     = "stdin"
-	messageTypeStdout    = "stdout"
-	messageTypeStderr    = "stderr"
-	messageTypeResize    = "resize"
-	messageTypeIgnore    = "ignore"
-	messageTypeConsole   = "console"
-	messageTypeAlert     = "alert"
-	messageTypeConnect   = "connect"
-)
+	// DefaultPtyTermType ...
+	DefaultPtyTermType = "xterm"
 
-type message struct {
-	Type messageType `json:"type"`
-	Data []byte      `json:"data"`
-	Cols int         `json:"cols,omitempty"`
-	Rows int         `json:"rows,omitempty"`
-}
+	// DefaultPtyTermConnTimeout ...
+	DefaultPtyTermConnTimeout = uint32(5) // Seconds
+
+	// DefaultPtyWSTransferBufferSize ...
+	DefaultPtyWSTransferBufferSize = uint32(8192)
+)

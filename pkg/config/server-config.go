@@ -21,8 +21,9 @@ package config
 
 // ServerProperties ...
 type ServerProperties struct {
-	Listen string         `yaml:"listen"`
-	Cors   CorsProperties `yaml:"cors"`
+	Listen   string             `yaml:"listen"`
+	Cors     CorsProperties     `yaml:"cors"`
+	SSH2Term SSH2TermProperties `yaml:"ssh2-term"`
 }
 
 // CorsProperties ...
@@ -32,7 +33,7 @@ type CorsProperties struct {
 	AllowMethods     string `"yaml:"allow-methods"`
 	AllowHeaders     string `"yaml:"allow-headers"`
 	ExposeHeaders    string `"yaml:"expose-headers"`
-	MaxAge           int    `"yaml:"max-age"` // Second
+	MaxAge           int    `"yaml:"max-age"` // Seconds
 }
 
 const (

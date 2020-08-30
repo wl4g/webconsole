@@ -47,6 +47,8 @@ func main() {
 	// Init zap logger.
 	logging.InitZapLogger()
 
+	// ctx, cancel := context.WithCancel(context.Background())
+
 	// Start webserver...
 	go startConsoleWebServer()
 

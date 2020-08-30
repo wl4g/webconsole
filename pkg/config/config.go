@@ -60,7 +60,7 @@ func InitGlobalConfig(path string) {
 
 // Create default configuration properties.
 func createDefaultProperties() *GlobalProperties {
-	globalConfig := &GlobalProperties{
+	return &GlobalProperties{
 		Admin: AdminProperties{
 			Listen: DefaultAdminServeListen,
 		},
@@ -73,6 +73,11 @@ func createDefaultProperties() *GlobalProperties {
 				AllowHeaders:     DefaultCorsAllowHeaders,
 				ExposeHeaders:    DefaultCorsExposeHeaders,
 				MaxAge:           DefaultCorsMaxAge,
+			},
+			SSH2Term: SSH2TermProperties{
+				PtyTermType:             DefaultPtyTermType,
+				PtyTermConnTimeout:      DefaultPtyTermConnTimeout,
+				PtyWSTransferBufferSize: DefaultPtyWSTransferBufferSize,
 			},
 		},
 		DataSource: DataSourceProperties{
@@ -110,7 +115,7 @@ func createDefaultProperties() *GlobalProperties {
 			},
 		},
 	}
-	return globalConfig
+
 }
 
 // MetricExclude settings after initialization

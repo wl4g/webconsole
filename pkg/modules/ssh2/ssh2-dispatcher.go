@@ -26,6 +26,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"xcloud-webconsole/pkg/config"
 	store "xcloud-webconsole/pkg/modules/ssh2/store"
 
 	"github.com/gorilla/websocket"
@@ -52,11 +53,12 @@ type WebSSH2Dispatcher struct {
 
 // NewWebSSH2Dispatcher New SSH2 webconsole connection
 func NewWebSSH2Dispatcher() *WebSSH2Dispatcher {
+	xterm := config.GlobalConfig.Server.SSH2Term
 	return &WebSSH2Dispatcher{
-		buffSize:    DefaultBuffSize,
+		term:        xterm.PtyTermType,
+		connTimeout: time.Duration(xterm.PtyTermConnTimeout),
 		logger:      DefaultLogger,
-		term:        DefaultTerm,
-		connTimeout: DefaultConnTimeout,
+		buffSize:    xterm.PtyWSTransferBufferSize,
 	}
 }
 
@@ -75,7 +77,7 @@ func (dispatcher *WebSSH2Dispatcher) SetLogOut(out io.Writer) {
 	dispatcher.logger.SetOutput(out)
 }
 
-// SetTerm 设置终端 term 类型
+// SetTerm 设置终端 term 类型(可设置 ansi/linux/vt100/xterm/dumb, 除dumb外其他都有颜色显示, 默认xterm)
 func (dispatcher *WebSSH2Dispatcher) SetTerm(term string) {
 	dispatcher.term = term
 }
@@ -177,7 +179,9 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 			defer func() {
 				_ = dispatcher.sshConn.Close()
 			}()
+
 			hasAddr = true
+
 			//==================step2==================
 			config.User = sessionBean.Username
 			//==================step3==================
@@ -337,7 +341,6 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 			}
 
 			hasAuth = true
-
 		case messageTypePublickey:
 			if hasAuth {
 				continue
@@ -402,10 +405,8 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 			}
 
 			hasAuth = true
-
 		// 为了兼容 zmodem， stdin 消息协议暂时无用，客户端数据都以二进制格式发送过来
 		case messageTypeStdin:
-
 			if stdin == nil {
 				dispatcher.logger.Printf("stdin wait login")
 				continue
@@ -416,7 +417,6 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("write to stdin error\r\n")})
 				return errors.Wrap(err, "write to stdin error")
 			}
-
 		case messageTypeResize:
 			if session == nil {
 				dispatcher.logger.Printf("resize wait session")
@@ -428,6 +428,7 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 				return errors.Wrap(err, "resize error")
 			}
 		}
+
 	}
 }
 
@@ -664,3 +665,28 @@ func checkByteCommand(x, y []byte) (n []byte, contain bool) {
 	n = append(x[:index], x[lastIndex:]...)
 	return n, true
 }
+
+type messageType string
+
+type message struct {
+	Type messageType `json:"type"`
+	Data []byte      `json:"data"`
+	Cols int         `json:"cols,omitempty"`
+	Rows int         `json:"rows,omitempty"`
+}
+
+const (
+	messageTypeAddr      = "addr"
+	messageTypeTerm      = "term"
+	messageTypeLogin     = "login"
+	messageTypePassword  = "password"
+	messageTypePublickey = "publickey"
+	messageTypeStdin     = "stdin"
+	messageTypeStdout    = "stdout"
+	messageTypeStderr    = "stderr"
+	messageTypeResize    = "resize"
+	messageTypeIgnore    = "ignore"
+	messageTypeConsole   = "console"
+	messageTypeAlert     = "alert"
+	messageTypeConnect   = "connect"
+)

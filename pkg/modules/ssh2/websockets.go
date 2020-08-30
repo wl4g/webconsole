@@ -30,8 +30,7 @@ func NewWebsocketConnectionFunc(c *gin.Context) {
 	wsSecID := c.Request.Header.Get("Sec-WebSocket-Key")
 	webssh := NewWebSSH2Dispatcher()
 
-	// term 可以使用 ansi, linux, vt100, xterm, dumb，除了 dumb外其他都有颜色显示, 默认 xterm
-	webssh.SetTerm(TermXterm)
+	webssh.SetTerm(DefaultTerm)
 	webssh.SetBuffSize(8192)
 	webssh.SetWSSecID(wsSecID)
 	webssh.SetConnTimeOut(5 * time.Second)
