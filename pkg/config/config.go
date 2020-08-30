@@ -82,7 +82,9 @@ func createDefaultProperties() *GlobalProperties {
 				MaxIdleConns:    DefaultMysqlMaxIdleConns,
 				ConnMaxLifetime: DefaultMysqlConnMaxLifetime,
 			},
-			Csv: CsvProperties{},
+			Csv: CsvProperties{
+				DataDir: DefaultCsvDataDir,
+			},
 		},
 		Logging: LoggingProperties{
 			DateFormatPattern: DefaultLogDateFormatPattern,

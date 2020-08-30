@@ -61,56 +61,56 @@ func NewWebSSH2Dispatcher() *WebSSH2Dispatcher {
 }
 
 // SetLogger ...
-func (ws *WebSSH2Dispatcher) SetLogger(logger *log.Logger) {
-	ws.logger = logger
+func (dispatcher *WebSSH2Dispatcher) SetLogger(logger *log.Logger) {
+	dispatcher.logger = logger
 }
 
 // SetBuffSize 设置 buff 大小
-func (ws *WebSSH2Dispatcher) SetBuffSize(buffSize uint32) {
-	ws.buffSize = buffSize
+func (dispatcher *WebSSH2Dispatcher) SetBuffSize(buffSize uint32) {
+	dispatcher.buffSize = buffSize
 }
 
 // SetLogOut 设置日志输出
-func (ws *WebSSH2Dispatcher) SetLogOut(out io.Writer) {
-	ws.logger.SetOutput(out)
+func (dispatcher *WebSSH2Dispatcher) SetLogOut(out io.Writer) {
+	dispatcher.logger.SetOutput(out)
 }
 
 // SetTerm 设置终端 term 类型
-func (ws *WebSSH2Dispatcher) SetTerm(term string) {
-	ws.term = term
+func (dispatcher *WebSSH2Dispatcher) SetTerm(term string) {
+	dispatcher.term = term
 }
 
 // SetWSSecID 设置连接id
-func (ws *WebSSH2Dispatcher) SetWSSecID(wsSecID string) {
-	ws.id = wsSecID
+func (dispatcher *WebSSH2Dispatcher) SetWSSecID(wsSecID string) {
+	dispatcher.id = wsSecID
 }
 
 // SetConnTimeOut 设置连接超时时间
-func (ws *WebSSH2Dispatcher) SetConnTimeOut(connTimeout time.Duration) {
-	ws.connTimeout = connTimeout
+func (dispatcher *WebSSH2Dispatcher) SetConnTimeOut(connTimeout time.Duration) {
+	dispatcher.connTimeout = connTimeout
 }
 
 // AddWebsocket 添加 websocket 连接
-func (ws *WebSSH2Dispatcher) AddWebsocket(conn *websocket.Conn) {
-	ws.logger.Printf("(%s) websocket connected", ws.id)
-	ws.websocket = conn
+func (dispatcher *WebSSH2Dispatcher) AddWebsocket(conn *websocket.Conn) {
+	dispatcher.logger.Printf("(%s) websocket connected", dispatcher.id)
+	dispatcher.websocket = conn
 	go func() {
-		ws.logger.Printf("(%s) websocket exit %v", ws.id, ws.server())
+		dispatcher.logger.Printf("(%s) websocket exit %v", dispatcher.id, dispatcher.handleDispatchChannel())
 	}()
 }
 
 // AddSSHConn 添加 ssh 连接
-func (ws *WebSSH2Dispatcher) AddSSHConn(conn net.Conn) {
-	ws.logger.Printf("(%s) ssh connected", ws.id)
-	ws.sshConn = conn
+func (dispatcher *WebSSH2Dispatcher) AddSSHConn(conn net.Conn) {
+	dispatcher.logger.Printf("(%s) ssh connected", dispatcher.id)
+	dispatcher.sshConn = conn
 }
 
 // 处理 websocket 连接发送过来的数据
-func (ws *WebSSH2Dispatcher) server() error {
+func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 	log.Printf("SSH2 dispatching starting...")
 
 	defer func() {
-		_ = ws.websocket.Close()
+		_ = dispatcher.websocket.Close()
 	}()
 
 	// 默认加密方式 aes128-ctr aes192-ctr aes256-ctr aes128-gcm@openssh.com arcfour256 arcfour128
@@ -122,7 +122,7 @@ func (ws *WebSSH2Dispatcher) server() error {
 
 	config := ssh.ClientConfig{
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		Timeout:         ws.connTimeout,
+		Timeout:         dispatcher.connTimeout,
 		Config:          sshConfig,
 	}
 
@@ -136,7 +136,7 @@ func (ws *WebSSH2Dispatcher) server() error {
 	for {
 		var msg message
 
-		msgType, data, err := ws.websocket.ReadMessage()
+		msgType, data, err := dispatcher.websocket.ReadMessage()
 		if err != nil {
 			return errors.Wrap(err, "websocket close or read message err")
 		}
@@ -168,14 +168,14 @@ func (ws *WebSSH2Dispatcher) server() error {
 			if !strings.Contains(sessionBean.Address, ":") { //fix
 				sessionBean.Address = sessionBean.Address + ":22"
 			}
-			conn, err := net.DialTimeout("tcp", sessionBean.Address, ws.connTimeout)
+			conn, err := net.DialTimeout("tcp", sessionBean.Address, dispatcher.connTimeout)
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("connect error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("connect error\r\n")})
 				return errors.Wrap(err, "connect addr "+sessionBean.Address+" error")
 			}
-			ws.AddSSHConn(conn)
+			dispatcher.AddSSHConn(conn)
 			defer func() {
-				_ = ws.sshConn.Close()
+				_ = dispatcher.sshConn.Close()
 			}()
 			hasAddr = true
 			//==================step2==================
@@ -183,20 +183,20 @@ func (ws *WebSSH2Dispatcher) server() error {
 			//==================step3==================
 			if sessionBean.SSHPrivateKey != "" {
 				pemStrings := sessionBean.SSHPrivateKey
-				ws.logger.Printf("(%s) auth with privatekey ******", ws.id)
+				dispatcher.logger.Printf("(%s) auth with privatekey ******", dispatcher.id)
 				pemBytes := []byte(pemStrings)
 
 				// 如果 key 有密码使用 ssh.ParsePrivateKeyWithPassphrase(pemBytes, []byte(passphrase))
 				signer, err := ssh.ParsePrivateKey(pemBytes)
 				if err != nil {
-					_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("parse publickey erro\r\n")})
+					_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("parse publickey erro\r\n")})
 					return errors.Wrap(err, "parse publickey error")
 				}
 
 				config.Auth = append(config.Auth, ssh.PublicKeys(signer))
-				session, err = ws.newSSHXtermSession(ws.sshConn, &config, msg)
+				session, err = dispatcher.createSSH2Session(dispatcher.sshConn, &config, msg)
 				if err != nil {
-					_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("publickey login error\r\n")})
+					_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("publickey login error\r\n")})
 					return errors.Wrap(err, "publickey login error")
 				}
 				defer func() {
@@ -205,21 +205,21 @@ func (ws *WebSSH2Dispatcher) server() error {
 
 				stdin, err = session.StdinPipe()
 				if err != nil {
-					_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin channel error\r\n")})
+					_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin channel error\r\n")})
 					return errors.Wrap(err, "get stdin channel error")
 				}
 				defer func() {
 					_ = stdin.Close()
 				}()
 
-				err = ws.transformOutput(session, ws.websocket)
+				err = dispatcher.transformChannel(session, dispatcher.websocket)
 				if err != nil {
-					_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin & stderr channel error\r\n")})
+					_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin & stderr channel error\r\n")})
 					return errors.Wrap(err, "get stdin & stderr channel error")
 				}
 				err = session.Shell()
 				if err != nil {
-					_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("start a login shell error\r\n")})
+					_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("start a login shell error\r\n")})
 					return errors.Wrap(err, "start a login shell error")
 				}
 
@@ -227,9 +227,9 @@ func (ws *WebSSH2Dispatcher) server() error {
 			} else {
 				password := sessionBean.Password
 				config.Auth = append(config.Auth, ssh.Password(password))
-				session, err = ws.newSSHXtermSession(ws.sshConn, &config, msg)
+				session, err = dispatcher.createSSH2Session(dispatcher.sshConn, &config, msg)
 				if err != nil {
-					_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("password login error\r\n")})
+					_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("password login error\r\n")})
 					return errors.Wrap(err, "password login error")
 				}
 				defer func() {
@@ -238,42 +238,41 @@ func (ws *WebSSH2Dispatcher) server() error {
 
 				stdin, err = session.StdinPipe()
 				if err != nil {
-					_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin channel error\r\n")})
+					_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin channel error\r\n")})
 					return errors.Wrap(err, "get stdin channel error")
 				}
 				defer func() {
 					_ = stdin.Close()
 				}()
 
-				err = ws.transformOutput(session, ws.websocket)
+				err = dispatcher.transformChannel(session, dispatcher.websocket)
 				if err != nil {
-					_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin & stderr channel error\r\n")})
+					_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin & stderr channel error\r\n")})
 					return errors.Wrap(err, "get stdin & stderr channel error")
 				}
 
 				err = session.Shell()
 				if err != nil {
-					_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("start a login shell error\r\n")})
+					_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("start a login shell error\r\n")})
 					return errors.Wrap(err, "start a login shell error")
 				}
 
 				hasAuth = true
 			}
-
 		case messageTypeAddr:
 			if hasAddr {
 				continue
 			}
 			addr, _ := url.QueryUnescape(string(msg.Data))
-			ws.logger.Printf("(%s) connect addr %s", ws.id, addr)
-			conn, err := net.DialTimeout("tcp", addr, ws.connTimeout)
+			dispatcher.logger.Printf("(%s) connect addr %s", dispatcher.id, addr)
+			conn, err := net.DialTimeout("tcp", addr, dispatcher.connTimeout)
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("connect error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("connect error\r\n")})
 				return errors.Wrap(err, "connect addr "+addr+" error")
 			}
-			ws.AddSSHConn(conn)
+			dispatcher.AddSSHConn(conn)
 			defer func() {
-				_ = ws.sshConn.Close()
+				_ = dispatcher.sshConn.Close()
 			}()
 			hasAddr = true
 		case messageTypeTerm:
@@ -281,35 +280,35 @@ func (ws *WebSSH2Dispatcher) server() error {
 				continue
 			}
 			term, _ := url.QueryUnescape(string(msg.Data))
-			ws.logger.Printf("(%s) set term %s", ws.id, term)
-			ws.SetTerm(term)
+			dispatcher.logger.Printf("(%s) set term %s", dispatcher.id, term)
+			dispatcher.SetTerm(term)
 			hasTerm = true
 		case messageTypeLogin:
 			if hasLogin {
 				continue
 			}
 			config.User, _ = url.QueryUnescape(string(msg.Data))
-			ws.logger.Printf("(%s) login with user %s", ws.id, config.User)
+			dispatcher.logger.Printf("(%s) login with user %s", dispatcher.id, config.User)
 			hasLogin = true
 		case messageTypePassword:
 			if hasAuth {
 				continue
 			}
-			if ws.sshConn == nil {
-				ws.logger.Printf("must connect addr first")
+			if dispatcher.sshConn == nil {
+				dispatcher.logger.Printf("must connect addr first")
 				continue
 			}
 			if config.User == "" {
-				ws.logger.Printf("must set user first")
+				dispatcher.logger.Printf("must set user first")
 				continue
 			}
 			password, _ := url.QueryUnescape(string(msg.Data))
-			//ws.logger.Printf("(%s) auth with password %s", ws.id, password)
-			ws.logger.Printf("(%s) auth with password ******", ws.id)
+			//dispatcher.logger.Printf("(%s) auth with password %s", dispatcher.id, password)
+			dispatcher.logger.Printf("(%s) auth with password ******", dispatcher.id)
 			config.Auth = append(config.Auth, ssh.Password(password))
-			session, err = ws.newSSHXtermSession(ws.sshConn, &config, msg)
+			session, err = dispatcher.createSSH2Session(dispatcher.sshConn, &config, msg)
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("password login error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("password login error\r\n")})
 				return errors.Wrap(err, "password login error")
 			}
 			defer func() {
@@ -318,22 +317,22 @@ func (ws *WebSSH2Dispatcher) server() error {
 
 			stdin, err = session.StdinPipe()
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin channel error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin channel error\r\n")})
 				return errors.Wrap(err, "get stdin channel error")
 			}
 			defer func() {
 				_ = stdin.Close()
 			}()
 
-			err = ws.transformOutput(session, ws.websocket)
+			err = dispatcher.transformChannel(session, dispatcher.websocket)
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin & stderr channel error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin & stderr channel error\r\n")})
 				return errors.Wrap(err, "get stdin & stderr channel error")
 			}
 
 			err = session.Shell()
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("start a login shell error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("start a login shell error\r\n")})
 				return errors.Wrap(err, "start a login shell error")
 			}
 
@@ -344,13 +343,13 @@ func (ws *WebSSH2Dispatcher) server() error {
 				continue
 			}
 
-			if ws.sshConn == nil {
-				ws.logger.Printf("must connect addr first")
+			if dispatcher.sshConn == nil {
+				dispatcher.logger.Printf("must connect addr first")
 				continue
 			}
 
 			if config.User == "" {
-				ws.logger.Printf("must set user first")
+				dispatcher.logger.Printf("must set user first")
 				continue
 			}
 
@@ -361,21 +360,21 @@ func (ws *WebSSH2Dispatcher) server() error {
 
 			// 传过来的 Data 是经过 url 编码的
 			pemStrings, _ := url.QueryUnescape(string(msg.Data))
-			//ws.logger.Printf("(%s) auth with privatekey %s", ws.id, pemStrings)
-			ws.logger.Printf("(%s) auth with privatekey ******", ws.id)
+			//dispatcher.logger.Printf("(%s) auth with privatekey %s", dispatcher.id, pemStrings)
+			dispatcher.logger.Printf("(%s) auth with privatekey ******", dispatcher.id)
 			pemBytes := []byte(pemStrings)
 
 			// 如果 key 有密码使用 ssh.ParsePrivateKeyWithPassphrase(pemBytes, []byte(passphrase))
 			signer, err := ssh.ParsePrivateKey(pemBytes)
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("parse publickey erro\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("parse publickey erro\r\n")})
 				return errors.Wrap(err, "parse publickey error")
 			}
 
 			config.Auth = append(config.Auth, ssh.PublicKeys(signer))
-			session, err = ws.newSSHXtermSession(ws.sshConn, &config, msg)
+			session, err = dispatcher.createSSH2Session(dispatcher.sshConn, &config, msg)
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("publickey login error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("publickey login error\r\n")})
 				return errors.Wrap(err, "publickey login error")
 			}
 			defer func() {
@@ -384,21 +383,21 @@ func (ws *WebSSH2Dispatcher) server() error {
 
 			stdin, err = session.StdinPipe()
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin channel error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin channel error\r\n")})
 				return errors.Wrap(err, "get stdin channel error")
 			}
 			defer func() {
 				_ = stdin.Close()
 			}()
 
-			err = ws.transformOutput(session, ws.websocket)
+			err = dispatcher.transformChannel(session, dispatcher.websocket)
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin & stderr channel error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("get stdin & stderr channel error\r\n")})
 				return errors.Wrap(err, "get stdin & stderr channel error")
 			}
 			err = session.Shell()
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("start a login shell error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("start a login shell error\r\n")})
 				return errors.Wrap(err, "start a login shell error")
 			}
 
@@ -408,24 +407,24 @@ func (ws *WebSSH2Dispatcher) server() error {
 		case messageTypeStdin:
 
 			if stdin == nil {
-				ws.logger.Printf("stdin wait login")
+				dispatcher.logger.Printf("stdin wait login")
 				continue
 			}
 
 			_, err = stdin.Write([]byte(string(msg.Data)))
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("write to stdin error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("write to stdin error\r\n")})
 				return errors.Wrap(err, "write to stdin error")
 			}
 
 		case messageTypeResize:
 			if session == nil {
-				ws.logger.Printf("resize wait session")
+				dispatcher.logger.Printf("resize wait session")
 				continue
 			}
 			err = session.WindowChange(msg.Rows, msg.Cols)
 			if err != nil {
-				_ = ws.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("resize error\r\n")})
+				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("resize error\r\n")})
 				return errors.Wrap(err, "resize error")
 			}
 		}
@@ -433,7 +432,7 @@ func (ws *WebSSH2Dispatcher) server() error {
 }
 
 // 创建 ssh 会话
-func (ws *WebSSH2Dispatcher) newSSHXtermSession(conn net.Conn, config *ssh.ClientConfig, msg message) (*ssh.Session, error) {
+func (dispatcher *WebSSH2Dispatcher) createSSH2Session(conn net.Conn, config *ssh.ClientConfig, msg message) (*ssh.Session, error) {
 	// 也可以使用这种方法连接
 	//client, err := ssh.Dial("tcp", "192.168.223.111:22", config)
 	//if err != nil {
@@ -464,7 +463,7 @@ func (ws *WebSSH2Dispatcher) newSSHXtermSession(conn net.Conn, config *ssh.Clien
 	if msg.Rows <= 0 || msg.Rows > 1000 {
 		msg.Rows = 80
 	}
-	err = session.RequestPty(ws.term, msg.Rows, msg.Cols, modes)
+	err = session.RequestPty(dispatcher.term, msg.Rows, msg.Cols, modes)
 	if err != nil {
 		return nil, errors.Wrap(err, "open pty error")
 	}
@@ -473,7 +472,7 @@ func (ws *WebSSH2Dispatcher) newSSHXtermSession(conn net.Conn, config *ssh.Clien
 }
 
 // 发送 ssh 会话的 stdout 和 stdin 数据到 websocket 连接
-func (ws *WebSSH2Dispatcher) transformOutput(session *ssh.Session, conn *websocket.Conn) error {
+func (dispatcher *WebSSH2Dispatcher) transformChannel(session *ssh.Session, conn *websocket.Conn) error {
 	stdout, err := session.StdoutPipe()
 	if err != nil {
 		return errors.Wrap(err, "get stdout channel error")
@@ -487,8 +486,8 @@ func (ws *WebSSH2Dispatcher) transformOutput(session *ssh.Session, conn *websock
 		return errors.Wrap(err, "get stdin channel error")
 	}
 
-	copyToMessage := func(t messageType, r io.Reader, w io.WriteCloser) {
-		buff := make([]byte, ws.buffSize)
+	transferHandler := func(t messageType, r io.Reader, w io.WriteCloser) {
+		buff := make([]byte, dispatcher.buffSize)
 		for {
 			n, err := r.Read(buff)
 			if err != nil {
@@ -499,8 +498,8 @@ func (ws *WebSSH2Dispatcher) transformOutput(session *ssh.Session, conn *websock
 			//fmt.Println(buff[:n])
 			//fmt.Println(t, n, res)
 
-			if ws.ZModemSZOO {
-				ws.ZModemSZOO = false
+			if dispatcher.ZModemSZOO {
+				dispatcher.ZModemSZOO = false
 				if n < 2 {
 					conn.WriteJSON(&message{Type: t, Data: buff[:n]})
 				} else if n == 2 {
@@ -518,35 +517,35 @@ func (ws *WebSSH2Dispatcher) transformOutput(session *ssh.Session, conn *websock
 					}
 				}
 			} else {
-				if ws.ZModemSZ {
-					if uint32(n) == ws.buffSize {
+				if dispatcher.ZModemSZ {
+					if uint32(n) == dispatcher.buffSize {
 						// 如果读取的长度为 buffsize，则认为是在传输数据，
 						// 这样可以提高 sz 下载速率，很低概率会误判 zmodem 取消操作
 						conn.WriteMessage(websocket.BinaryMessage, buff[:n])
 					} else {
 						if x, ok := checkByteCommand(buff[:n], ZModemSZEnd); ok {
-							ws.ZModemSZ = false
-							ws.ZModemSZOO = true
+							dispatcher.ZModemSZ = false
+							dispatcher.ZModemSZOO = true
 							conn.WriteMessage(websocket.BinaryMessage, ZModemSZEnd)
 							if len(x) != 0 {
 								conn.WriteJSON(&message{Type: messageTypeConsole, Data: x})
 							}
 						} else if _, ok := checkByteCommand(buff[:n], ZModemCancel); ok {
-							ws.ZModemSZ = false
+							dispatcher.ZModemSZ = false
 							conn.WriteMessage(websocket.BinaryMessage, buff[:n])
 						} else {
 							conn.WriteMessage(websocket.BinaryMessage, buff[:n])
 						}
 					}
-				} else if ws.ZModemRZ {
+				} else if dispatcher.ZModemRZ {
 					if x, ok := checkByteCommand(buff[:n], ZModemRZEnd); ok {
-						ws.ZModemRZ = false
+						dispatcher.ZModemRZ = false
 						conn.WriteMessage(websocket.BinaryMessage, ZModemRZEnd)
 						if len(x) != 0 {
 							conn.WriteJSON(&message{Type: messageTypeConsole, Data: x})
 						}
 					} else if _, ok := checkByteCommand(buff[:n], ZModemCancel); ok {
-						ws.ZModemRZ = false
+						dispatcher.ZModemRZ = false
 						conn.WriteMessage(websocket.BinaryMessage, buff[:n])
 					} else {
 						// rz 上传过程中服务器端还是会给客户端发送一些信息，比如心跳
@@ -584,7 +583,7 @@ func (ws *WebSSH2Dispatcher) transformOutput(session *ssh.Session, conn *websock
 					}
 				} else {
 					if x, ok := checkByteCommand(buff[:n], ZModemSZStart); ok {
-						if ws.DisableZModemSZ {
+						if dispatcher.DisableZModemSZ {
 							conn.WriteJSON(&message{Type: messageTypeAlert, Data: []byte("sz download is disabled")})
 							w.Write(ZModemCancel)
 						} else {
@@ -592,7 +591,7 @@ func (ws *WebSSH2Dispatcher) transformOutput(session *ssh.Session, conn *websock
 								// 下载不存在的文件以及文件夹(zmodem 不支持下载文件夹)时
 								conn.WriteJSON(&message{Type: t, Data: y})
 							} else {
-								ws.ZModemSZ = true
+								dispatcher.ZModemSZ = true
 								if len(x) != 0 {
 									conn.WriteJSON(&message{Type: messageTypeConsole, Data: x})
 								}
@@ -600,44 +599,44 @@ func (ws *WebSSH2Dispatcher) transformOutput(session *ssh.Session, conn *websock
 							}
 						}
 					} else if x, ok := checkByteCommand(buff[:n], ZModemRZStart); ok {
-						if ws.DisableZModemRZ {
+						if dispatcher.DisableZModemRZ {
 							conn.WriteJSON(&message{Type: messageTypeAlert, Data: []byte("rz upload is disabled")})
 							w.Write(ZModemCancel)
 						} else {
-							ws.ZModemRZ = true
+							dispatcher.ZModemRZ = true
 							if len(x) != 0 {
 								conn.WriteJSON(&message{Type: messageTypeConsole, Data: x})
 							}
 							conn.WriteMessage(websocket.BinaryMessage, ZModemRZStart)
 						}
 					} else if x, ok := checkByteCommand(buff[:n], ZModemRZEStart); ok {
-						if ws.DisableZModemRZ {
+						if dispatcher.DisableZModemRZ {
 							conn.WriteJSON(&message{Type: messageTypeAlert, Data: []byte("rz upload is disabled")})
 							w.Write(ZModemCancel)
 						} else {
-							ws.ZModemRZ = true
+							dispatcher.ZModemRZ = true
 							if len(x) != 0 {
 								conn.WriteJSON(&message{Type: messageTypeConsole, Data: x})
 							}
 							conn.WriteMessage(websocket.BinaryMessage, ZModemRZEStart)
 						}
 					} else if x, ok := checkByteCommand(buff[:n], ZModemRZSStart); ok {
-						if ws.DisableZModemRZ {
+						if dispatcher.DisableZModemRZ {
 							conn.WriteJSON(&message{Type: messageTypeAlert, Data: []byte("rz upload is disabled")})
 							w.Write(ZModemCancel)
 						} else {
-							ws.ZModemRZ = true
+							dispatcher.ZModemRZ = true
 							if len(x) != 0 {
 								conn.WriteJSON(&message{Type: messageTypeConsole, Data: x})
 							}
 							conn.WriteMessage(websocket.BinaryMessage, ZModemRZSStart)
 						}
 					} else if x, ok := checkByteCommand(buff[:n], ZModemRZESStart); ok {
-						if ws.DisableZModemRZ {
+						if dispatcher.DisableZModemRZ {
 							conn.WriteJSON(&message{Type: messageTypeAlert, Data: []byte("rz upload is disabled")})
 							w.Write(ZModemCancel)
 						} else {
-							ws.ZModemRZ = true
+							dispatcher.ZModemRZ = true
 							if len(x) != 0 {
 								conn.WriteJSON(&message{Type: messageTypeConsole, Data: x})
 							}
@@ -650,8 +649,8 @@ func (ws *WebSSH2Dispatcher) transformOutput(session *ssh.Session, conn *websock
 			}
 		}
 	}
-	go copyToMessage(messageTypeStdout, stdout, stdin)
-	go copyToMessage(messageTypeStderr, stderr, stdin)
+	go transferHandler(messageTypeStdout, stdout, stdin)
+	go transferHandler(messageTypeStderr, stderr, stdin)
 	return nil
 }
 

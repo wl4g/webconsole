@@ -21,6 +21,7 @@ type SSH2Store interface {
 	QuerySessionList() []SessionBean
 	SaveSession(session *SessionBean) int64
 	DeleteSession(sessionID int64) int
+	Destroy() error
 }
 
 // SessionBean User terminal session info bean
@@ -34,7 +35,7 @@ type SessionBean struct {
 }
 
 //
-// --- Delegate repository. ---
+// --- Delegate Store. ---
 //
 
 // DelegateSSH2Store ...
@@ -69,8 +70,14 @@ func (store *DelegateSSH2Store) DeleteSession(sessionID int64) int {
 	return store.getOrginStore().DeleteSession(sessionID)
 }
 
+// Destroy ...
+func (store *DelegateSSH2Store) Destroy() {
+	store.getOrginStore().Destroy()
+}
+
 // Gets orgin real store instance.
 func (store *DelegateSSH2Store) getOrginStore() SSH2Store {
+	// TODO
 	switch 1 {
 	case 1:
 		// return store.mysql

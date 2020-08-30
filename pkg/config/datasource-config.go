@@ -38,6 +38,7 @@ type MysqlProperties struct {
 
 // CsvProperties ...
 type CsvProperties struct {
+	DataDir string `yaml:"data-dir"`
 }
 
 const (
@@ -56,4 +57,10 @@ const (
 
 	// DefaultMysqlConnMaxLifetime ...
 	DefaultMysqlConnMaxLifetime = 90 * time.Second
+
+	// DefaultCsvDataDir ...
+	DefaultCsvDataDir = "/mnt/disk1/webconsole/"
+
+	// DefaultCsvDataFile ...
+	DefaultCsvDataFile = "webconsole.db.csv"
 )

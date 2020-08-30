@@ -21,16 +21,19 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"xcloud-webconsole/pkg/config"
 )
 
-const defaultCsvStoreFile = "~/sshconsole.csv"
+var (
+	csvDataFile = config.GlobalConfig.DataSource.Csv.DataDir + config.DefaultCsvDataFile
+)
 
 // CsvStore ...
 type CsvStore struct{}
 
 // GetSessionByID ...
 func (that *CsvStore) GetSessionByID(id int64) *SessionBean {
-	rfile, _ := os.Open(defaultCsvStoreFile)
+	rfile, _ := os.Open(csvDataFile)
 	r := csv.NewReader(rfile)
 
 	for {
@@ -64,7 +67,7 @@ func (that *CsvStore) GetSessionByID(id int64) *SessionBean {
 func (that *CsvStore) QuerySessionList() []SessionBean {
 	// 通过切片存储
 	sessions := make([]SessionBean, 0)
-	rfile, _ := os.Open(defaultCsvStoreFile)
+	rfile, _ := os.Open(csvDataFile)
 	r := csv.NewReader(rfile)
 
 	for {
@@ -94,7 +97,7 @@ func (that *CsvStore) QuerySessionList() []SessionBean {
 
 // SaveSession ...
 func (that *CsvStore) SaveSession(session *SessionBean) {
-	file, _ := os.OpenFile(defaultCsvStoreFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
+	file, _ := os.OpenFile(csvDataFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	w := csv.NewWriter(file)
 	id := strconv.FormatInt(session.ID, 10)
 	_ = w.Write([]string{id, session.Name, session.Address, session.Username, session.Password, session.Password})
@@ -105,4 +108,9 @@ func (that *CsvStore) SaveSession(session *SessionBean) {
 // DeleteSession ...
 func (that *CsvStore) DeleteSession(sessionID int64) int {
 	return 0
+}
+
+// Destroy ...
+func (that *CsvStore) Destroy() error {
+	return nil
 }

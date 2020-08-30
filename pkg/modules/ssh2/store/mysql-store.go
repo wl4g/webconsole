@@ -99,3 +99,8 @@ func (that *MysqlStore) DeleteSession(ID int64) {
 	rowsaffected, _ := result.RowsAffected()
 	log.Printf("RowsAffected: %d", rowsaffected)
 }
+
+// Destroy ...
+func (that *MysqlStore) Destroy() error {
+	return that.mysqlDB.Close()
+}

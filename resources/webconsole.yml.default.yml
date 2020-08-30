@@ -32,6 +32,7 @@ datasource:
     dbconnectstr: gzsm:gzsm@%#jh?@tcp(127.0.0.1:3306)/devops_dev?charset=utf-8
     # 10.0.0.160:3306
   csv:
+    data-dir: /mnt/disk1/webconsole/
 
 ### -------------------------------------
 ### Admin configuration.
