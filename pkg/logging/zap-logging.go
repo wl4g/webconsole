@@ -64,17 +64,6 @@ func (log zapLoggerWrapper) IsFatal() bool {
 	return log.Level <= zapcore.FatalLevel
 }
 
-//
-// Create zapLogger wrapper.
-//
-func newZapLoggerWrapper(filePath string, level zapcore.Level, maxSize int, maxBackups int, maxAge int, compress bool, service string) *zapLoggerWrapper {
-	return &zapLoggerWrapper{
-		newZapLogger(filePath, level,
-			maxSize, maxBackups, maxAge, compress, service),
-		level,
-	}
-}
-
 // -------------------------
 // Zap logger creation.
 // -------------------------
@@ -102,6 +91,17 @@ func InitZapLogger() {
 		receiveLog.Policy.MaxBackups,
 		receiveLog.Policy.RetentionDays,
 		true, config.DefaultLogReceive)
+}
+
+//
+// Create zapLogger wrapper.
+//
+func newZapLoggerWrapper(filePath string, level zapcore.Level, maxSize int, maxBackups int, maxAge int, compress bool, service string) *zapLoggerWrapper {
+	return &zapLoggerWrapper{
+		newZapLogger(filePath, level,
+			maxSize, maxBackups, maxAge, compress, service),
+		level,
+	}
 }
 
 //
@@ -183,5 +183,5 @@ func parseLogLevel(text string) zapcore.Level {
 
 // Output time encoder
 func timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(t.Format("06-01-02 15:04:05"))
+	enc.AppendString(t.Format(config.GlobalConfig.Logging.DateFormatPattern))
 }

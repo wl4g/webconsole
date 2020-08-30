@@ -15,8 +15,8 @@
  */
 package repository
 
-// SSH2Repository ...
-type SSH2Repository interface {
+// SSH2Store ...
+type SSH2Store interface {
 	GetSessionByID(sessionID int64) *SessionBean
 	QuerySessionList() []SessionBean
 	SaveSession(session *SessionBean) int64
@@ -37,46 +37,46 @@ type SessionBean struct {
 // --- Delegate repository. ---
 //
 
-// DelegateSSH2Repository ...
-type DelegateSSH2Repository struct {
-	// SSH2Repository
-	mysql MysqlRepository
-	csv   CsvRepository
+// DelegateSSH2Store ...
+type DelegateSSH2Store struct {
+	// SSH2Store
+	mysql MysqlStore
+	csv   CsvStore
 }
 
-// GetDelegateSSH2Repository ...
-func GetDelegateSSH2Repository() *DelegateSSH2Repository {
-	return &DelegateSSH2Repository{}
+// GetDelegateSSH2Store ...
+func GetDelegateSSH2Store() *DelegateSSH2Store {
+	return &DelegateSSH2Store{}
 }
 
 // GetSessionByID ...
-func (repo *DelegateSSH2Repository) GetSessionByID(sessionID int64) *SessionBean {
-	return repo.getOrginRepository().GetSessionByID(sessionID)
+func (store *DelegateSSH2Store) GetSessionByID(sessionID int64) *SessionBean {
+	return store.getOrginStore().GetSessionByID(sessionID)
 }
 
 // QuerySessionList ...
-func (repo *DelegateSSH2Repository) QuerySessionList() []SessionBean {
-	return repo.getOrginRepository().QuerySessionList()
+func (store *DelegateSSH2Store) QuerySessionList() []SessionBean {
+	return store.getOrginStore().QuerySessionList()
 }
 
 // SaveSession ...
-func (repo *DelegateSSH2Repository) SaveSession(session *SessionBean) int64 {
-	return repo.getOrginRepository().SaveSession(session)
+func (store *DelegateSSH2Store) SaveSession(session *SessionBean) int64 {
+	return store.getOrginStore().SaveSession(session)
 }
 
 // DeleteSession ...
-func (repo *DelegateSSH2Repository) DeleteSession(sessionID int64) int {
-	return repo.getOrginRepository().DeleteSession(sessionID)
+func (store *DelegateSSH2Store) DeleteSession(sessionID int64) int {
+	return store.getOrginStore().DeleteSession(sessionID)
 }
 
-// Gets orgin real repository instance.
-func (repo *DelegateSSH2Repository) getOrginRepository() SSH2Repository {
+// Gets orgin real store instance.
+func (store *DelegateSSH2Store) getOrginStore() SSH2Store {
 	switch 1 {
 	case 1:
-		// return repo.mysql
+		// return store.mysql
 		return nil
 	default:
-		// return repo.csv
+		// return store.csv
 		return nil
 	}
 }

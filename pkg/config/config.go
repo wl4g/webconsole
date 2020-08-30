@@ -28,7 +28,7 @@ import (
 type GlobalProperties struct {
 	Admin      AdminProperties      `yaml:"admin"`
 	Server     ServerProperties     `yaml:"server"`
-	Repository RepositoryProperties `yaml:"repository"`
+	DataSource DataSourceProperties `yaml:"datasource"`
 	Logging    LoggingProperties    `yaml:"logging"`
 }
 
@@ -75,7 +75,7 @@ func createDefaultProperties() *GlobalProperties {
 				MaxAge:           DefaultCorsMaxAge,
 			},
 		},
-		Repository: RepositoryProperties{
+		DataSource: DataSourceProperties{
 			Mysql: MysqlProperties{
 				DbConnectStr:    DefaultMysqlConnectStr,
 				MaxOpenConns:    DefaultMysqlMaxOpenConns,
@@ -85,6 +85,7 @@ func createDefaultProperties() *GlobalProperties {
 			Csv: CsvProperties{},
 		},
 		Logging: LoggingProperties{
+			DateFormatPattern: DefaultLogDateFormatPattern,
 			LogItems: map[string]LogItemProperties{
 				DefaultLogMain: {
 					FileName: DefaultLogDir + DefaultLogMain + ".log",

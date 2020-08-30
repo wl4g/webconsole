@@ -19,7 +19,7 @@ import "testing"
 
 func TestGetSessionByIdCsv(t *testing.T) {
 	// TODO
-	// new(CsvRepository{}).GetSessionByID(1)
+	// new(CsvStore{}).GetSessionByID(1)
 }
 
 func TestSaveSessionCsv(t *testing.T) {
@@ -31,5 +31,5 @@ func TestSaveSessionCsv(t *testing.T) {
 	session.SSHPrivateKey = ""
 
 	// TODO
-	// new(CsvRepository{}).SaveSessionCsv(session)
+	// new(CsvStore{}).SaveSessionCsv(session)
 }

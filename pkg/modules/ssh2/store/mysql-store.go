@@ -25,16 +25,16 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// MysqlRepository ...
-type MysqlRepository struct {
+// MysqlStore ...
+type MysqlStore struct {
 	mysqlDB *sql.DB
 }
 
-var repo *MysqlRepository
+var repo *MysqlStore
 
-// InitMysqlRepository ...
-func (that *MysqlRepository) InitMysqlRepository() {
-	mysqlConfig := config.GlobalConfig.Repository.Mysql
+// InitMysqlStore ...
+func (that *MysqlStore) InitMysqlStore() {
+	mysqlConfig := config.GlobalConfig.DataSource.Mysql
 	log.Print("Connecting to MySQL of configuration: " + utils.ToJSONString(mysqlConfig))
 
 	mydb, dberr := utils.OpenMysqlConnection(
@@ -52,7 +52,7 @@ func (that *MysqlRepository) InitMysqlRepository() {
 }
 
 // GetSessionByID find session info by id
-func (that *MysqlRepository) GetSessionByID(id int64) *SessionBean {
+func (that *MysqlStore) GetSessionByID(id int64) *SessionBean {
 	session := new(SessionBean)
 	row := that.mysqlDB.QueryRow("select id,name,address,username,password,IFNULL(ssh_key, '') from webconsole_session where id=?", id)
 	if err := row.Scan(&session.ID, &session.Name, &session.Address, &session.Username, &session.Password, &session.SSHPrivateKey); err != nil {
@@ -63,7 +63,7 @@ func (that *MysqlRepository) GetSessionByID(id int64) *SessionBean {
 }
 
 // QuerySessionList ...
-func (that *MysqlRepository) QuerySessionList() []SessionBean {
+func (that *MysqlStore) QuerySessionList() []SessionBean {
 	// 通过切片存储
 	sessions := make([]SessionBean, 0)
 	rows, _ := that.mysqlDB.Query("SELECT * FROM `webconsole_session` limit ?", 100)
@@ -80,7 +80,7 @@ func (that *MysqlRepository) QuerySessionList() []SessionBean {
 }
 
 // SaveSession ...
-func (that *MysqlRepository) SaveSession(session *SessionBean) int64 {
+func (that *MysqlStore) SaveSession(session *SessionBean) int64 {
 	ret, e := that.mysqlDB.Exec("insert INTO webconsole_session(name,address,username,password,ssh_key) values(?,?,?,?,?)", session.Name, session.Address, session.Username, session.Password, session.SSHPrivateKey)
 	if nil != e {
 		log.Print("add fail", e)
@@ -94,7 +94,7 @@ func (that *MysqlRepository) SaveSession(session *SessionBean) int64 {
 }
 
 // DeleteSession ...
-func (that *MysqlRepository) DeleteSession(ID int64) {
+func (that *MysqlStore) DeleteSession(ID int64) {
 	result, _ := that.mysqlDB.Exec("delete from webconsole_session where id=?", ID)
 	rowsaffected, _ := result.RowsAffected()
 	log.Printf("RowsAffected: %d", rowsaffected)

@@ -34,3 +34,30 @@ type CorsProperties struct {
 	ExposeHeaders    string `"yaml:"expose-headers"`
 	MaxAge           int    `"yaml:"max-age"` // Second
 }
+
+const (
+	// -------------------------------
+	// WebConsole server constants.
+	// -------------------------------
+
+	// DefaultServeListen ...
+	DefaultServeListen = ":16088"
+
+	// DefaultCorsAllowOrigins ...
+	DefaultCorsAllowOrigins = "http://localhost:16088,https://webconsole.wl4g.debug,https://webconsole.wl4g.com,"
+
+	// DefaultCorsAllowCredentials ...
+	DefaultCorsAllowCredentials = false
+
+	// DefaultCorsAllowMethods ...
+	DefaultCorsAllowMethods = "GET,POST,OPTIONS,PUT,DELETE,UPDATE"
+
+	// DefaultCorsAllowHeaders ...
+	DefaultCorsAllowHeaders = "Authorization,Content-Length,X-CSRF-Token,Token,session,X_Requested_With,Accept,Origin,Host,Connection,Accept-Encoding,Accept-Language,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Pragma"
+
+	// DefaultCorsExposeHeaders ...
+	DefaultCorsExposeHeaders = "Content-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Pragma"
+
+	// DefaultCorsMaxAge ...
+	DefaultCorsMaxAge = 172800
+)

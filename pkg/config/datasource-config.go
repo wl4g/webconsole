@@ -18,11 +18,11 @@ package config
 import "time"
 
 // ---------------------
-// Repository DAO properties
+// Repository(datasource) DAO properties
 // ---------------------
 
-// RepositoryProperties ...
-type RepositoryProperties struct {
+// DataSourceProperties ...
+type DataSourceProperties struct {
 	Mysql MysqlProperties `yaml:"mysql"`
 	Csv   CsvProperties   `yaml:"csv"`
 }
@@ -39,3 +39,21 @@ type MysqlProperties struct {
 // CsvProperties ...
 type CsvProperties struct {
 }
+
+const (
+	// -------------------------------
+	// Repository(datasource) DAO constants.
+	// -------------------------------
+
+	// DefaultMysqlConnectStr ...
+	DefaultMysqlConnectStr = "root:root@tcp(127.0.0.1:3306)/webconsole?charset=utf-8"
+
+	// DefaultMysqlMaxOpenConns ...
+	DefaultMysqlMaxOpenConns = 80
+
+	// DefaultMysqlMaxIdleConns ...
+	DefaultMysqlMaxIdleConns = 10
+
+	// DefaultMysqlConnMaxLifetime ...
+	DefaultMysqlConnMaxLifetime = 90 * time.Second
+)

@@ -25,11 +25,11 @@ import (
 
 const defaultCsvStoreFile = "~/sshconsole.csv"
 
-// CsvRepository ...
-type CsvRepository struct{}
+// CsvStore ...
+type CsvStore struct{}
 
 // GetSessionByID ...
-func (that *CsvRepository) GetSessionByID(id int64) *SessionBean {
+func (that *CsvStore) GetSessionByID(id int64) *SessionBean {
 	rfile, _ := os.Open(defaultCsvStoreFile)
 	r := csv.NewReader(rfile)
 
@@ -61,7 +61,7 @@ func (that *CsvRepository) GetSessionByID(id int64) *SessionBean {
 }
 
 // QuerySessionList ...
-func (that *CsvRepository) QuerySessionList() []SessionBean {
+func (that *CsvStore) QuerySessionList() []SessionBean {
 	// 通过切片存储
 	sessions := make([]SessionBean, 0)
 	rfile, _ := os.Open(defaultCsvStoreFile)
@@ -93,7 +93,7 @@ func (that *CsvRepository) QuerySessionList() []SessionBean {
 }
 
 // SaveSession ...
-func (that *CsvRepository) SaveSession(session *SessionBean) {
+func (that *CsvStore) SaveSession(session *SessionBean) {
 	file, _ := os.OpenFile(defaultCsvStoreFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	w := csv.NewWriter(file)
 	id := strconv.FormatInt(session.ID, 10)
@@ -103,6 +103,6 @@ func (that *CsvRepository) SaveSession(session *SessionBean) {
 }
 
 // DeleteSession ...
-func (that *CsvRepository) DeleteSession(sessionID int64) int {
+func (that *CsvStore) DeleteSession(sessionID int64) int {
 	return 0
 }

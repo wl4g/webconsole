@@ -18,7 +18,7 @@ package ssh2
 import (
 	"net/http"
 	"strconv"
-	repo "xcloud-webconsole/pkg/modules/ssh2/repository"
+	store "xcloud-webconsole/pkg/modules/ssh2/store"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,13 +31,13 @@ func AddSSH2SessionFunc(c *gin.Context) {
 	password := c.PostForm("password")
 	sshKey := c.PostForm("sshKey")
 
-	session := new(repo.SessionBean)
+	session := new(store.SessionBean)
 	session.Name = name
 	session.Address = address
 	session.Username = username
 	session.Password = password
 	session.SSHPrivateKey = sshKey
-	id := repo.GetDelegateSSH2Repository().SaveSession(session)
+	id := store.GetDelegateSSH2Store().SaveSession(session)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "OK",
@@ -47,7 +47,7 @@ func AddSSH2SessionFunc(c *gin.Context) {
 
 // QuerySSH2SessionsFunc ...
 func QuerySSH2SessionsFunc(c *gin.Context) {
-	sessions := repo.GetDelegateSSH2Repository().QuerySessionList()
+	sessions := store.GetDelegateSSH2Store().QuerySessionList()
 	c.JSON(http.StatusOK, gin.H{
 		"status":   "OK",
 		"sessions": sessions,
@@ -58,7 +58,7 @@ func QuerySSH2SessionsFunc(c *gin.Context) {
 func DeleteSSH2SessionFunc(c *gin.Context) {
 	idStr := c.PostForm("id")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
-	repo.GetDelegateSSH2Repository().DeleteSession(id)
+	store.GetDelegateSSH2Store().DeleteSession(id)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "OK",
 	})

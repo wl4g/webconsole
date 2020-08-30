@@ -21,7 +21,8 @@ package config
 
 // LoggingProperties Multi log properties.
 type LoggingProperties struct {
-	LogItems map[string]LogItemProperties `yaml:"log-items"`
+	DateFormatPattern string                       `yaml:"dateformat-pattern"`
+	LogItems          map[string]LogItemProperties `yaml:"log-items"`
 }
 
 // LogItemProperties LogItem properties.
@@ -37,3 +38,33 @@ type PolicyProperties struct {
 	MaxBackups    int `yaml:"max-backups"`
 	MaxSize       int `yaml:"max-size"`
 }
+
+const (
+	// -------------------------------
+	// Log constants.
+	// -------------------------------
+
+	// DefaultLogMain Default log service 'main'.
+	DefaultLogMain = "main"
+
+	// DefaultLogReceive Default log service 'receive'.
+	DefaultLogReceive = "receive"
+
+	// DefaultLogDir Default log directory.
+	DefaultLogDir = "./log/"
+
+	// DefaultLogDateFormatPattern Default log date format pattern
+	DefaultLogDateFormatPattern = "06-01-02 15:04:05"
+
+	// DefaultLogLevel Default log level
+	DefaultLogLevel = "INFO"
+
+	// DefaultLogRetentionDays Default log retention days.
+	DefaultLogRetentionDays = 30
+
+	// DefaultLogMaxBackups Default log max backup numbers.
+	DefaultLogMaxBackups = 30
+
+	// DefaultLogMaxSize Default log max size(MB).
+	DefaultLogMaxSize = 512
+)

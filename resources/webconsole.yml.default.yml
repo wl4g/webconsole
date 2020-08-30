@@ -20,11 +20,17 @@ server:
   listen: :16088
   cors:
     allow-origins: '*'
+    allow-credentials: false
+    allow-methods: GET,POST,OPTIONS,PUT,DELETE,UPDATE
+    allow-headers: Authorization,Content-Length,X-CSRF-Token,Token,session,X_Requested_With,Accept,Origin,Host,Connection,Accept-Encoding,Accept-Language,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Pragma
+    expose-headers: Content-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Pragma,
+    max-age: 172800
 
 datasource:
   mysql:
-    # 10.0.0.160:3306
+    # user:password@tcp(host:port)/database?charset=utf-8
     dbconnectstr: gzsm:gzsm@%#jh?@tcp(127.0.0.1:3306)/devops_dev?charset=utf-8
+    # 10.0.0.160:3306
   csv:
 
 ### -------------------------------------
@@ -38,6 +44,7 @@ admin:
 ### -------------------------------------
 logging:
   log-items:
+    dateformat-pattern: 06-01-02 15:04:05 # ISO8601 => 2006-01-02 15:04:05
     main:
       file: ./log/webconsole.log
       level: INFO

@@ -26,7 +26,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	repo "xcloud-webconsole/pkg/modules/ssh2/repository"
+	store "xcloud-webconsole/pkg/modules/ssh2/store"
 
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
@@ -163,7 +163,7 @@ func (ws *WebSSH2Dispatcher) server() error {
 			//==================step1==================
 			data, _ := url.QueryUnescape(string(msg.Data))
 			id, _ := strconv.ParseInt(data, 10, 64)
-			sessionBean := repo.GetDelegateSSH2Repository().GetSessionByID(id)
+			sessionBean := store.GetDelegateSSH2Store().GetSessionByID(id)
 
 			if !strings.Contains(sessionBean.Address, ":") { //fix
 				sessionBean.Address = sessionBean.Address + ":22"
