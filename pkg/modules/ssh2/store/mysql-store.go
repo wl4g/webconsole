@@ -17,6 +17,7 @@ package store
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"xcloud-webconsole/pkg/config"
@@ -30,29 +31,30 @@ type MysqlStore struct {
 	mysqlDB *sql.DB
 }
 
-var repo *MysqlStore
-
-// InitMysqlStore ...
-func (that *MysqlStore) InitMysqlStore() {
+// NewMysqlStore ...
+func NewMysqlStore() (*MysqlStore, error) {
 	mysqlConfig := config.GlobalConfig.DataSource.Mysql
 	log.Print("Connecting to MySQL of configuration: " + utils.ToJSONString(mysqlConfig))
 
-	mydb, dberr := utils.OpenMysqlConnection(
+	mydb, err := utils.OpenMysqlConnection(
 		mysqlConfig.DbConnectStr,
 		mysqlConfig.MaxOpenConns,
 		mysqlConfig.MaxIdleConns,
 		mysqlConfig.ConnMaxLifetime,
 	)
-	that.mysqlDB = mydb
-	//defer mysqlDB.Close();
+	//defer mysqlDB.Close(); // @see #Close()
 
-	if dberr != nil {
-		panic("Cannot connect to mysql. " + dberr.Error())
+	if err != nil {
+		return nil, errors.New("Cannot connect to mysql. " + err.Error())
 	}
+
+	return &MysqlStore{
+		mysqlDB: mydb,
+	}, nil
 }
 
 // GetSessionByID find session info by id
-func (that *MysqlStore) GetSessionByID(id int64) *SessionBean {
+func (that MysqlStore) GetSessionByID(id int64) *SessionBean {
 	session := new(SessionBean)
 	row := that.mysqlDB.QueryRow("select id,name,address,username,password,IFNULL(ssh_key, '') from webconsole_session where id=?", id)
 	if err := row.Scan(&session.ID, &session.Name, &session.Address, &session.Username, &session.Password, &session.SSHPrivateKey); err != nil {
@@ -63,7 +65,7 @@ func (that *MysqlStore) GetSessionByID(id int64) *SessionBean {
 }
 
 // QuerySessionList ...
-func (that *MysqlStore) QuerySessionList() []SessionBean {
+func (that MysqlStore) QuerySessionList() []SessionBean {
 	// 通过切片存储
 	sessions := make([]SessionBean, 0)
 	rows, _ := that.mysqlDB.Query("SELECT * FROM `webconsole_session` limit ?", 100)
@@ -80,7 +82,7 @@ func (that *MysqlStore) QuerySessionList() []SessionBean {
 }
 
 // SaveSession ...
-func (that *MysqlStore) SaveSession(session *SessionBean) int64 {
+func (that MysqlStore) SaveSession(session *SessionBean) int64 {
 	ret, e := that.mysqlDB.Exec("insert INTO webconsole_session(name,address,username,password,ssh_key) values(?,?,?,?,?)", session.Name, session.Address, session.Username, session.Password, session.SSHPrivateKey)
 	if nil != e {
 		log.Print("add fail", e)
@@ -94,13 +96,15 @@ func (that *MysqlStore) SaveSession(session *SessionBean) int64 {
 }
 
 // DeleteSession ...
-func (that *MysqlStore) DeleteSession(ID int64) {
+func (that MysqlStore) DeleteSession(ID int64) int64 {
 	result, _ := that.mysqlDB.Exec("delete from webconsole_session where id=?", ID)
 	rowsaffected, _ := result.RowsAffected()
 	log.Printf("RowsAffected: %d", rowsaffected)
+
+	return rowsaffected
 }
 
-// Destroy ...
-func (that *MysqlStore) Destroy() error {
+// Close ...
+func (that MysqlStore) Close() error {
 	return that.mysqlDB.Close()
 }

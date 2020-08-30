@@ -165,7 +165,7 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 			//==================step1==================
 			data, _ := url.QueryUnescape(string(msg.Data))
 			id, _ := strconv.ParseInt(data, 10, 64)
-			sessionBean := store.GetDelegateSSH2Store().GetSessionByID(id)
+			sessionBean := store.GetDelegate().GetSessionByID(id)
 
 			if !strings.Contains(sessionBean.Address, ":") { //fix
 				sessionBean.Address = sessionBean.Address + ":22"

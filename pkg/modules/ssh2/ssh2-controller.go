@@ -37,7 +37,7 @@ func AddSSH2SessionFunc(c *gin.Context) {
 	session.Username = username
 	session.Password = password
 	session.SSHPrivateKey = sshKey
-	id := store.GetDelegateSSH2Store().SaveSession(session)
+	id := store.GetDelegate().SaveSession(session)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "OK",
@@ -47,7 +47,7 @@ func AddSSH2SessionFunc(c *gin.Context) {
 
 // QuerySSH2SessionsFunc ...
 func QuerySSH2SessionsFunc(c *gin.Context) {
-	sessions := store.GetDelegateSSH2Store().QuerySessionList()
+	sessions := store.GetDelegate().QuerySessionList()
 	c.JSON(http.StatusOK, gin.H{
 		"status":   "OK",
 		"sessions": sessions,
@@ -58,7 +58,7 @@ func QuerySSH2SessionsFunc(c *gin.Context) {
 func DeleteSSH2SessionFunc(c *gin.Context) {
 	idStr := c.PostForm("id")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
-	store.GetDelegateSSH2Store().DeleteSession(id)
+	store.GetDelegate().DeleteSession(id)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "OK",
 	})

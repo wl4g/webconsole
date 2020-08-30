@@ -15,13 +15,20 @@
  */
 package store
 
+import (
+	"io"
+	"xcloud-webconsole/pkg/logging"
+
+	"go.uber.org/zap"
+)
+
 // SSH2Store ...
 type SSH2Store interface {
 	GetSessionByID(sessionID int64) *SessionBean
 	QuerySessionList() []SessionBean
 	SaveSession(session *SessionBean) int64
-	DeleteSession(sessionID int64) int
-	Destroy() error
+	DeleteSession(sessionID int64) int64
+	io.Closer
 }
 
 // SessionBean User terminal session info bean
@@ -40,50 +47,69 @@ type SessionBean struct {
 
 // DelegateSSH2Store ...
 type DelegateSSH2Store struct {
-	// SSH2Store
-	mysql MysqlStore
-	csv   CsvStore
+	orgin *SSH2Store
 }
 
-// GetDelegateSSH2Store ...
-func GetDelegateSSH2Store() *DelegateSSH2Store {
-	return &DelegateSSH2Store{}
+var (
+	singletonDelegate *DelegateSSH2Store
+)
+
+// GetDelegate Gets or create real store instance with orgin.
+func GetDelegate() *DelegateSSH2Store {
+	var err error
+	if singletonDelegate == nil {
+		singletonDelegate, err = newDelegateSSH2Store()
+	}
+	if err != nil {
+		logging.Main.Panic("Unable get or create DelegateSSH2Store, cause by: %s",
+			zap.String(err.Error(), ""))
+		return nil
+	}
+	return singletonDelegate
+}
+
+func newDelegateSSH2Store() (*DelegateSSH2Store, error) {
+	var orginStore SSH2Store
+	switch 1 {
+	case 1:
+		if mysql, err1 := NewMysqlStore(); err1 == nil {
+			orginStore = *mysql
+		} else {
+			return nil, err1
+		}
+	default:
+		if csv, err2 := NewCsvStore(); err2 == nil {
+			orginStore = *csv
+		} else {
+			return nil, err2
+		}
+	}
+	return &DelegateSSH2Store{
+		orgin: &orginStore,
+	}, nil
 }
 
 // GetSessionByID ...
 func (store *DelegateSSH2Store) GetSessionByID(sessionID int64) *SessionBean {
-	return store.getOrginStore().GetSessionByID(sessionID)
+	return (*store.orgin).GetSessionByID(sessionID)
 }
 
 // QuerySessionList ...
 func (store *DelegateSSH2Store) QuerySessionList() []SessionBean {
-	return store.getOrginStore().QuerySessionList()
+	return (*store.orgin).QuerySessionList()
 }
 
 // SaveSession ...
 func (store *DelegateSSH2Store) SaveSession(session *SessionBean) int64 {
-	return store.getOrginStore().SaveSession(session)
+	return (*store.orgin).SaveSession(session)
 }
 
 // DeleteSession ...
-func (store *DelegateSSH2Store) DeleteSession(sessionID int64) int {
-	return store.getOrginStore().DeleteSession(sessionID)
+func (store *DelegateSSH2Store) DeleteSession(sessionID int64) int64 {
+	return (*store.orgin).DeleteSession(sessionID)
 }
 
-// Destroy ...
-func (store *DelegateSSH2Store) Destroy() {
-	store.getOrginStore().Destroy()
-}
-
-// Gets orgin real store instance.
-func (store *DelegateSSH2Store) getOrginStore() SSH2Store {
-	// TODO
-	switch 1 {
-	case 1:
-		// return store.mysql
-		return nil
-	default:
-		// return store.csv
-		return nil
-	}
+// Close ...
+func (store *DelegateSSH2Store) Close() error {
+	return (*store.orgin).Close()
 }

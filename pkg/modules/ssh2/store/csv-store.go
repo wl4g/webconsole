@@ -29,10 +29,16 @@ var (
 )
 
 // CsvStore ...
-type CsvStore struct{}
+type CsvStore struct {
+}
+
+// NewCsvStore ...
+func NewCsvStore() (*CsvStore, error) {
+	return &CsvStore{}, nil
+}
 
 // GetSessionByID ...
-func (that *CsvStore) GetSessionByID(id int64) *SessionBean {
+func (that CsvStore) GetSessionByID(id int64) *SessionBean {
 	rfile, _ := os.Open(csvDataFile)
 	r := csv.NewReader(rfile)
 
@@ -64,7 +70,7 @@ func (that *CsvStore) GetSessionByID(id int64) *SessionBean {
 }
 
 // QuerySessionList ...
-func (that *CsvStore) QuerySessionList() []SessionBean {
+func (that CsvStore) QuerySessionList() []SessionBean {
 	// 通过切片存储
 	sessions := make([]SessionBean, 0)
 	rfile, _ := os.Open(csvDataFile)
@@ -96,21 +102,24 @@ func (that *CsvStore) QuerySessionList() []SessionBean {
 }
 
 // SaveSession ...
-func (that *CsvStore) SaveSession(session *SessionBean) {
+func (that CsvStore) SaveSession(session *SessionBean) int64 {
 	file, _ := os.OpenFile(csvDataFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	w := csv.NewWriter(file)
 	id := strconv.FormatInt(session.ID, 10)
 	_ = w.Write([]string{id, session.Name, session.Address, session.Username, session.Password, session.Password})
 	w.Flush()
 	_ = file.Close()
-}
 
-// DeleteSession ...
-func (that *CsvStore) DeleteSession(sessionID int64) int {
+	// TODO
 	return 0
 }
 
-// Destroy ...
-func (that *CsvStore) Destroy() error {
+// DeleteSession ...
+func (that CsvStore) DeleteSession(sessionID int64) int64 {
+	return 0
+}
+
+// Close ...
+func (that CsvStore) Close() error {
 	return nil
 }
