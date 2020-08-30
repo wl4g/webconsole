@@ -18,8 +18,8 @@ package ssh2
 import (
 	"log"
 	"net/http"
-	"os"
 	"time"
+	"xcloud-webconsole/pkg/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -27,14 +27,15 @@ import (
 
 // NewWebsocketConnectionFunc ...
 func NewWebsocketConnectionFunc(c *gin.Context) {
+	term := config.GlobalConfig.Server.SSH2Term
+
 	wsSecID := c.Request.Header.Get("Sec-WebSocket-Key")
 	webssh := NewWebSSH2Dispatcher()
 
-	webssh.SetTerm(DefaultTerm)
-	webssh.SetBuffSize(8192)
+	webssh.SetTerm(term.PtyTermType)
+	webssh.SetBuffSize(term.PtyWSTransferBufferSize)
+	webssh.SetConnTimeOut(time.Duration(term.PtyTermConnTimeout))
 	webssh.SetWSSecID(wsSecID)
-	webssh.SetConnTimeOut(5 * time.Second)
-	webssh.SetLogger(log.New(os.Stderr, "[webssh] ", log.Ltime|log.Ldate))
 
 	upgrader := websocket.Upgrader{
 		// Cross/cors origin domain

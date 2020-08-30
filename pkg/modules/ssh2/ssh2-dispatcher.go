@@ -27,10 +27,12 @@ import (
 	"strings"
 	"time"
 	"xcloud-webconsole/pkg/config"
+	"xcloud-webconsole/pkg/logging"
 	store "xcloud-webconsole/pkg/modules/ssh2/store"
 
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -46,35 +48,23 @@ type WebSSH2Dispatcher struct {
 	sshConn                          net.Conn
 	websocket                        *websocket.Conn
 	connTimeout                      time.Duration
-	logger                           *log.Logger
 	DisableZModemSZ, DisableZModemRZ bool
 	ZModemSZ, ZModemRZ, ZModemSZOO   bool
 }
 
 // NewWebSSH2Dispatcher New SSH2 webconsole connection
 func NewWebSSH2Dispatcher() *WebSSH2Dispatcher {
-	xterm := config.GlobalConfig.Server.SSH2Term
+	term := config.GlobalConfig.Server.SSH2Term
 	return &WebSSH2Dispatcher{
-		term:        xterm.PtyTermType,
-		connTimeout: time.Duration(xterm.PtyTermConnTimeout),
-		logger:      DefaultLogger,
-		buffSize:    xterm.PtyWSTransferBufferSize,
+		term:        term.PtyTermType,
+		connTimeout: time.Duration(term.PtyTermConnTimeout),
+		buffSize:    term.PtyWSTransferBufferSize,
 	}
-}
-
-// SetLogger ...
-func (dispatcher *WebSSH2Dispatcher) SetLogger(logger *log.Logger) {
-	dispatcher.logger = logger
 }
 
 // SetBuffSize 设置 buff 大小
 func (dispatcher *WebSSH2Dispatcher) SetBuffSize(buffSize uint32) {
 	dispatcher.buffSize = buffSize
-}
-
-// SetLogOut 设置日志输出
-func (dispatcher *WebSSH2Dispatcher) SetLogOut(out io.Writer) {
-	dispatcher.logger.SetOutput(out)
 }
 
 // SetTerm 设置终端 term 类型(可设置 ansi/linux/vt100/xterm/dumb, 除dumb外其他都有颜色显示, 默认xterm)
@@ -94,16 +84,24 @@ func (dispatcher *WebSSH2Dispatcher) SetConnTimeOut(connTimeout time.Duration) {
 
 // AddWebsocket 添加 websocket 连接
 func (dispatcher *WebSSH2Dispatcher) AddWebsocket(conn *websocket.Conn) {
-	dispatcher.logger.Printf("(%s) websocket connected", dispatcher.id)
+	logging.Receive.Info("(%s) websocket connected",
+		zap.String("dispatcherID", dispatcher.id))
+
 	dispatcher.websocket = conn
 	go func() {
-		dispatcher.logger.Printf("(%s) websocket exit %v", dispatcher.id, dispatcher.handleDispatchChannel())
+		if err := dispatcher.handleDispatchChannel(); err != nil {
+			logging.Receive.Error("(%s) websocket exit %v",
+				zap.String("dispatcherID", dispatcher.id),
+				zap.Error(err))
+		}
 	}()
 }
 
 // AddSSHConn 添加 ssh 连接
 func (dispatcher *WebSSH2Dispatcher) AddSSHConn(conn net.Conn) {
-	dispatcher.logger.Printf("(%s) ssh connected", dispatcher.id)
+	logging.Receive.Info("(%s) ssh connected",
+		zap.String("dispatcherID", dispatcher.id))
+
 	dispatcher.sshConn = conn
 }
 
@@ -187,7 +185,9 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 			//==================step3==================
 			if sessionBean.SSHPrivateKey != "" {
 				pemStrings := sessionBean.SSHPrivateKey
-				dispatcher.logger.Printf("(%s) auth with privatekey ******", dispatcher.id)
+				logging.Receive.Info("(%s) auth with privatekey ******",
+					zap.String("dispatcherID", dispatcher.id))
+
 				pemBytes := []byte(pemStrings)
 
 				// 如果 key 有密码使用 ssh.ParsePrivateKeyWithPassphrase(pemBytes, []byte(passphrase))
@@ -268,7 +268,10 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 				continue
 			}
 			addr, _ := url.QueryUnescape(string(msg.Data))
-			dispatcher.logger.Printf("(%s) connect addr %s", dispatcher.id, addr)
+			logging.Receive.Info("(%s) connect addr %s",
+				zap.String("dispatcherID", dispatcher.id),
+				zap.String("addr", addr))
+
 			conn, err := net.DialTimeout("tcp", addr, dispatcher.connTimeout)
 			if err != nil {
 				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("connect error\r\n")})
@@ -284,7 +287,9 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 				continue
 			}
 			term, _ := url.QueryUnescape(string(msg.Data))
-			dispatcher.logger.Printf("(%s) set term %s", dispatcher.id, term)
+			logging.Receive.Info("(%s) set term %s",
+				zap.String("dispatcherID", dispatcher.id),
+				zap.String("term", term))
 			dispatcher.SetTerm(term)
 			hasTerm = true
 		case messageTypeLogin:
@@ -292,23 +297,29 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 				continue
 			}
 			config.User, _ = url.QueryUnescape(string(msg.Data))
-			dispatcher.logger.Printf("(%s) login with user %s", dispatcher.id, config.User)
+			logging.Receive.Info("(%s) login with user %s",
+				zap.String("dispatcherID", dispatcher.id),
+				zap.String("user", config.User))
 			hasLogin = true
 		case messageTypePassword:
 			if hasAuth {
 				continue
 			}
 			if dispatcher.sshConn == nil {
-				dispatcher.logger.Printf("must connect addr first")
+				logging.Receive.Info("must connect addr first")
 				continue
 			}
 			if config.User == "" {
-				dispatcher.logger.Printf("must set user first")
+				logging.Receive.Info("must set user first")
 				continue
 			}
 			password, _ := url.QueryUnescape(string(msg.Data))
-			//dispatcher.logger.Printf("(%s) auth with password %s", dispatcher.id, password)
-			dispatcher.logger.Printf("(%s) auth with password ******", dispatcher.id)
+			//logging.Receive.Info("(%s) auth with password %s",
+			//	zap.String("dispatcherID", dispatcher.id),
+			// 	zap.String("password", password))
+			logging.Receive.Info("(%s) auth with password ******",
+				zap.String("dispatcherID", dispatcher.id))
+
 			config.Auth = append(config.Auth, ssh.Password(password))
 			session, err = dispatcher.createSSH2Session(dispatcher.sshConn, &config, msg)
 			if err != nil {
@@ -347,12 +358,12 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 			}
 
 			if dispatcher.sshConn == nil {
-				dispatcher.logger.Printf("must connect addr first")
+				logging.Receive.Info("must connect addr first")
 				continue
 			}
 
 			if config.User == "" {
-				dispatcher.logger.Printf("must set user first")
+				logging.Receive.Info("must set user first")
 				continue
 			}
 
@@ -363,8 +374,12 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 
 			// 传过来的 Data 是经过 url 编码的
 			pemStrings, _ := url.QueryUnescape(string(msg.Data))
-			//dispatcher.logger.Printf("(%s) auth with privatekey %s", dispatcher.id, pemStrings)
-			dispatcher.logger.Printf("(%s) auth with privatekey ******", dispatcher.id)
+			//logging.Receive.Info("(%s) auth with password %s",
+			//	zap.String("dispatcherID", dispatcher.id),
+			// 	zap.String("pemStrings", pemStrings))
+			logging.Receive.Info("(%s) auth with privatekey ******",
+				zap.String("dispatcherID", dispatcher.id))
+
 			pemBytes := []byte(pemStrings)
 
 			// 如果 key 有密码使用 ssh.ParsePrivateKeyWithPassphrase(pemBytes, []byte(passphrase))
@@ -408,7 +423,7 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 		// 为了兼容 zmodem， stdin 消息协议暂时无用，客户端数据都以二进制格式发送过来
 		case messageTypeStdin:
 			if stdin == nil {
-				dispatcher.logger.Printf("stdin wait login")
+				logging.Receive.Info("stdin wait login")
 				continue
 			}
 
@@ -419,7 +434,7 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 			}
 		case messageTypeResize:
 			if session == nil {
-				dispatcher.logger.Printf("resize wait session")
+				logging.Receive.Info("resize wait session")
 				continue
 			}
 			err = session.WindowChange(msg.Rows, msg.Cols)

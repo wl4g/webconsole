@@ -62,7 +62,7 @@ func GetDelegate() *DelegateSSH2Store {
 	}
 	if err != nil {
 		logging.Main.Panic("Unable get or create DelegateSSH2Store, cause by: %s",
-			zap.String(err.Error(), ""))
+			zap.String("err", err.Error()))
 		return nil
 	}
 	return singletonDelegate

@@ -15,12 +15,6 @@
  */
 package ssh2
 
-import (
-	"io/ioutil"
-	"log"
-	"time"
-)
-
 const (
 	// DefaultSSH2APIBaseURI ssh2 console base URI.
 	DefaultSSH2APIBaseURI = "/terminal/"
@@ -35,12 +29,5 @@ const (
 )
 
 var (
-	// DefaultTerm ...
-	DefaultTerm = "xterm"
-	// DefaultConnTimeout ...
-	DefaultConnTimeout = 15 * time.Second
-	// DefaultLogger ...
-	DefaultLogger = log.New(ioutil.Discard, "[webssh] ", log.Ltime|log.Ldate)
-	// DefaultBuffSize ...
-	DefaultBuffSize = uint32(8192)
+// DefaultLogger = log.New(ioutil.Discard, "[webssh] ", log.Ltime|log.Ldate)
 )
