@@ -16,9 +16,7 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"log"
+	"context"
 	"net/http"
 	"strconv"
 	"time"
@@ -26,64 +24,64 @@ import (
 	config "xcloud-webconsole/pkg/config"
 	logging "xcloud-webconsole/pkg/logging"
 	ssh2 "xcloud-webconsole/pkg/modules/ssh2"
+	"xcloud-webconsole/pkg/utils"
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
-const (
-	defaultConfigPath = "/etc/webconsole.yml"
-)
+// WebConsole ...
+type WebConsole struct {
+	stopper *utils.Stopper
+}
 
-func main() {
-	confPath := defaultConfigPath
-	// Parsing configuration path
-	flag.StringVar(&confPath, "c", defaultConfigPath, "WebConsole config path.")
-	flag.Usage()
-	flag.Parse()
-	fmt.Printf("Initializing config path for '%s'\n", confPath)
+// StartServe ...
+func (wc *WebConsole) StartServe(ctx context.Context, conf string) {
+	wc.stopper = utils.NewStopper(ctx, func() {
+		logging.Main.Info("Stopping ...")
+	})
 
 	// Init global config.
-	config.InitGlobalConfig(confPath)
+	config.InitGlobalConfig(conf)
 
 	// Init zap logger.
 	logging.InitZapLogger()
 
-	// ctx, cancel := context.WithCancel(context.Background())
-
 	// Start webserver...
-	go startConsoleWebServer()
+	go wc.startWebServer()
 
 	// Start admin server
 	go admin.ServeStart()
 
-	select {}
+	// Waiting for system exit
+	wc.stopper.WaitForExit()
 }
 
-// startConsoleWebServer ...
-func startConsoleWebServer() *gin.Engine {
-	logging.Main.Info("WebConsole starting...")
+// startWebServer ...
+func (wc *WebConsole) startWebServer() *gin.Engine {
+	logging.Main.Info("WebConsole server starting...")
 
 	engine := gin.New()
 	// gin.SetMode(gin.ReleaseMode)
-	engine.Use(createCorsHandler())
+	engine.Use(wc.createCorsHandler())
 	zapLogger := logging.Main.GetZapLogger()
 	engine.Use(ginzap.Ginzap(zapLogger, time.RFC3339, true))
 	engine.Use(ginzap.RecoveryWithZap(zapLogger, true))
 
 	// Register SSH2 handlers
-	registerSSH2Handlers(engine)
+	wc.registerSSH2Handlers(engine)
 
 	err := engine.Run(config.GlobalConfig.Server.Listen) // Default listen on 0.0.0.0:8080.
 	if err != nil {
-		log.Panic(err)
+		logging.Main.Panic("Failed to start ginserver engine", zap.Error(err))
 	}
 
 	return engine
 }
 
 // registerSSH2Handlers ...
-func registerSSH2Handlers(engine *gin.Engine) {
+func (wc *WebConsole) registerSSH2Handlers(engine *gin.Engine) {
 	engine.GET(ssh2.DefaultSSH2APIWebSocketURI, ssh2.NewWebsocketConnectionFunc)
 	engine.GET(ssh2.DefaultSSH2APISessionQueryURI, ssh2.QuerySSH2SessionsFunc)
 	engine.POST(ssh2.DefaultSSH2APISessionAddURI, ssh2.AddSSH2SessionFunc)
@@ -91,7 +89,7 @@ func registerSSH2Handlers(engine *gin.Engine) {
 }
 
 // createCorsHandler ...
-func createCorsHandler() gin.HandlerFunc {
+func (wc *WebConsole) createCorsHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method
 		origin := c.Request.Header.Get("Origin")
