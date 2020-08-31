@@ -65,6 +65,7 @@ func startConsoleWebServer() *gin.Engine {
 	logging.Main.Info("WebConsole starting...")
 
 	engine := gin.New()
+	// gin.SetMode(gin.ReleaseMode)
 	engine.Use(createCorsHandler())
 	zapLogger := logging.Main.GetZapLogger()
 	engine.Use(ginzap.Ginzap(zapLogger, time.RFC3339, true))

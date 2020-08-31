@@ -10,7 +10,9 @@
             "request": "launch",
             "mode": "auto",
             "program": "${fileDirname}",
-            "env": {},
+            "env": {
+                "GIN_MODE": "debug" // debug|test|release
+            },
             "args": [
                 "-c",
                 "${fileDirname}/../resources/webconsole.yml"
