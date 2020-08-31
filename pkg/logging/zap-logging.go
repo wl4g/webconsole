@@ -43,7 +43,12 @@ type zapLoggerWrapper struct {
 	zapcore.Level
 }
 
-// Add method to zapLogger wrapper.
+// Add methods to zapLogger wrapper.
+
+func (log zapLoggerWrapper) GetZapLogger() *zap.Logger {
+	return log.Logger
+}
+
 func (log zapLoggerWrapper) IsDebug() bool {
 	return log.Level <= zapcore.DebugLevel
 }

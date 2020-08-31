@@ -19,10 +19,11 @@ import (
 	"net/http"
 
 	config "xcloud-webconsole/pkg/config"
+	"xcloud-webconsole/pkg/logging"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/prometheus/common/log"
+	"go.uber.org/zap"
 )
 
 type adminMetricCollector struct {
@@ -61,7 +62,10 @@ func ServeStart() {
 	adminMetricCollector := newAdminMetricCollector()
 	prometheus.MustRegister(adminMetricCollector)
 
-	log.Info("Starting prometheus exporter on port: " + config.GlobalConfig.Admin.Listen)
+	logging.Main.Info("Starting prometheus exporter...",
+		zap.String("Listen", config.GlobalConfig.Admin.Listen))
+
 	http.Handle("/metrics", promhttp.Handler())
-	log.Fatal(http.ListenAndServe(config.GlobalConfig.Admin.Listen, nil))
+	err := http.ListenAndServe(config.GlobalConfig.Admin.Listen, nil)
+	logging.Main.Fatal("Failed to start admin prometheus exporter", zap.Error(err))
 }

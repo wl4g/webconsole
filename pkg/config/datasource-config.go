@@ -28,10 +28,10 @@ type DataSourceProperties struct {
 // MysqlProperties ...
 type MysqlProperties struct {
 	// e.g: user:password@tcp(host:port)/database?charset=utf-8
-	DbConnectStr       string `"yaml:"dbconnectstr"`
-	MaxOpenConns       int    `"yaml:"max-open-conns"`
-	MaxIdleConns       int    `"yaml:"max-idle-conns"`
-	ConnMaxLifetimeSec uint32 `"yaml:"conn-max-lifetime"` // Seconds
+	DbConnectStr       string `yaml:"dbconnectstr"`
+	MaxOpenConns       int    `yaml:"max-open-conns"`
+	MaxIdleConns       int    `yaml:"max-idle-conns"`
+	ConnMaxLifetimeSec uint32 `yaml:"conn-max-lifetime"` // Seconds
 }
 
 // CsvProperties ...
@@ -45,7 +45,7 @@ const (
 	// -------------------------------
 
 	// DefaultMysqlConnectStr ...
-	DefaultMysqlConnectStr = "root:root@tcp(127.0.0.1:3306)/webconsole?charset=utf-8"
+	DefaultMysqlConnectStr = "root:root@tcp(127.0.0.1:3306)/webconsole"
 
 	// DefaultMysqlMaxOpenConns ...
 	DefaultMysqlMaxOpenConns = 80

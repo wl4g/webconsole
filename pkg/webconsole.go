@@ -21,12 +21,14 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"xcloud-webconsole/pkg/admin"
+	"time"
+	admin "xcloud-webconsole/pkg/admin"
 	config "xcloud-webconsole/pkg/config"
-	"xcloud-webconsole/pkg/logging"
+	logging "xcloud-webconsole/pkg/logging"
 	ssh2 "xcloud-webconsole/pkg/modules/ssh2"
 
-	gin "github.com/gin-gonic/gin"
+	ginzap "github.com/gin-contrib/zap"
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -60,10 +62,13 @@ func main() {
 
 // startConsoleWebServer ...
 func startConsoleWebServer() *gin.Engine {
-	log.Printf("WebConsole starting...")
+	logging.Main.Info("WebConsole starting...")
 
-	engine := gin.Default()
+	engine := gin.New()
 	engine.Use(createCorsHandler())
+	zapLogger := logging.Main.GetZapLogger()
+	engine.Use(ginzap.Ginzap(zapLogger, time.RFC3339, true))
+	engine.Use(ginzap.RecoveryWithZap(zapLogger, true))
 
 	// Register SSH2 handlers
 	registerSSH2Handlers(engine)

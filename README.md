@@ -8,7 +8,7 @@ A lightweight enterprise Web Console terminal, supporting SSH2/(RDP/RFB/Telnet) 
 - Enhanced support for mobile terminal copy, paste, fast forward, backward and other key combination command, user-friendly operation habits
 
 ### TODO
-- Completely unify the daily output of each component, such as `gin` framework
+- [√] Completely unify the daily output of each component, such as `gin` framework.
 - Enhance the administrator functions of webconsole service, such as its own health/metrics/indicator(CPU/Mem/Network/Connections...) And more detailed indicators
 - In order to realize the remote image UI control protocol compatible with windows RDP(Remote Desktop Protocol) based on Web
 - In order to realize the remote image UI control protocol compatible with windows RFB(Remote FrameBuffer) based on Web

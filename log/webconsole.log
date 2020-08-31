@@ -1,2 +1,0 @@
-{"level":"panic","time":"20-08-31 10:54:39","line":"store/store.go:64","msg":"Unable get or create DelegateSSH2Store, cause by: %s","service":"main","err":"Cannot connect to mysql. dial tcp 127.0.0.1:3306: connect: connection refused"}
-{"level":"panic","time":"20-08-31 10:55:51","line":"store/store.go:64","msg":"Unable get or create DelegateSSH2Store, cause by: %s","service":"main","err":"Cannot connect to mysql. Error 1115: Unknown character set: 'utf'"}

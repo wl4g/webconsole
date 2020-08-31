@@ -41,14 +41,14 @@ admin:
 logging:
   log-items:
     main:
-      file: ./log/webconsole.log
+      file: /mnt/disk1/log/webconsole/webconsole.log
       level: INFO
       policy:
         retention-days: 30 # Day
         max-backups: 30 # Numbers
         max-size: 512 # MB
     receive:
-      file: ./log/webconsole-ws.log
+      file: /mnt/disk1/log/webconsole/webconsole-ws.log
       level: INFO
       policy:
         retention-days: 30 # Day

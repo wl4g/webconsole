@@ -51,7 +51,7 @@ const (
 	DefaultLogReceive = "receive"
 
 	// DefaultLogDir Default log directory.
-	DefaultLogDir = "./log/"
+	DefaultLogDir = "/mnt/disk1/log/webconsole/"
 
 	// DefaultLogDateFormatPattern Default log date format pattern
 	DefaultLogDateFormatPattern = "06-01-02 15:04:05"
