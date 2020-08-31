@@ -17,11 +17,12 @@ package store
 
 import (
 	"encoding/csv"
+	"go.uber.org/zap"
 	"io"
-	"log"
 	"os"
 	"strconv"
 	"xcloud-webconsole/pkg/config"
+	"xcloud-webconsole/pkg/logging"
 )
 
 var (
@@ -45,13 +46,12 @@ func (that CsvStore) GetSessionByID(id int64) *SessionBean {
 	for {
 		row, err := r.Read()
 		if err != nil && err != io.EOF {
-			log.Fatalf("can not read, err is %+v", err)
+			logging.Receive.Fatal("can not read, err is %+v", zap.Error(err))
 		}
 		if err == io.EOF {
 			break
 		}
 		if len(row) < 5 {
-			log.Println("can not format this row ,%V", row)
 			continue
 		}
 		rowId, err := strconv.ParseInt(row[0], 10, 64)
@@ -79,13 +79,12 @@ func (that CsvStore) QuerySessionList() []SessionBean {
 	for {
 		row, err := r.Read()
 		if err != nil && err != io.EOF {
-			log.Fatalf("can not read, err is %+v", err)
+			logging.Receive.Fatal("can not read, err is %+v", zap.Error(err))
 		}
 		if err == io.EOF {
 			break
 		}
 		if len(row) < 5 {
-			log.Println("can not format this row ,%V", row)
 			continue
 		}
 		rowId, err := strconv.ParseInt(row[0], 10, 64)

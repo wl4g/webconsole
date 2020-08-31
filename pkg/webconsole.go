@@ -26,9 +26,10 @@ import (
 	ssh2 "xcloud-webconsole/pkg/modules/ssh2"
 	"xcloud-webconsole/pkg/utils"
 
+	"go.uber.org/zap"
+
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 )
 
 // WebConsole ...
@@ -74,7 +75,7 @@ func (wc *WebConsole) startWebServer() *gin.Engine {
 
 	err := engine.Run(config.GlobalConfig.Server.Listen) // Default listen on 0.0.0.0:8080.
 	if err != nil {
-		logging.Main.Panic("Failed to start ginserver engine", zap.Error(err))
+		logging.Receive.Panic("error", zap.Error(err))
 	}
 
 	return engine

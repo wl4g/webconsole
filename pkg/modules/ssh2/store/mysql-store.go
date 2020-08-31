@@ -19,9 +19,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
+	"go.uber.org/zap"
 	"time"
 	"xcloud-webconsole/pkg/config"
+	"xcloud-webconsole/pkg/logging"
 	utils "xcloud-webconsole/pkg/utils"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -35,7 +36,7 @@ type MysqlStore struct {
 // NewMysqlStore ...
 func NewMysqlStore() (*MysqlStore, error) {
 	mysqlConfig := config.GlobalConfig.DataSource.Mysql
-	log.Print("Connecting to MySQL of configuration: " + utils.ToJSONString(mysqlConfig))
+	logging.Receive.Info("Connecting to MySQL of configuration: %s", zap.String("mysqlConfig", utils.ToJSONString(mysqlConfig)))
 
 	mydb, err := utils.OpenMysqlConnection(
 		mysqlConfig.DbConnectStr,
@@ -59,7 +60,7 @@ func (that MysqlStore) GetSessionByID(id int64) *SessionBean {
 	session := new(SessionBean)
 	row := that.mysqlDB.QueryRow("select id,name,address,username,IFNULL(password, ''),IFNULL(ssh_key, '') from webconsole_session where id=?", id)
 	if err := row.Scan(&session.ID, &session.Name, &session.Address, &session.Username, &session.Password, &session.SSHPrivateKey); err != nil {
-		log.Fatal("GetSessionById", err)
+		logging.Receive.Fatal("GetSessionById", zap.Error(err))
 	}
 	fmt.Println(session.ID, session.Name, session.Username)
 	return session
@@ -86,13 +87,13 @@ func (that MysqlStore) QuerySessionList() []SessionBean {
 func (that MysqlStore) SaveSession(session *SessionBean) int64 {
 	ret, e := that.mysqlDB.Exec("insert INTO webconsole_session(name,address,username,password,ssh_key) values(?,?,?,?,?)", session.Name, session.Address, session.Username, session.Password, session.SSHPrivateKey)
 	if nil != e {
-		log.Print("add fail", e)
+		logging.Receive.Info("add fail", zap.Error(e))
 		return 0
 	}
 	//影响行数
 	rowsaffected, _ := ret.RowsAffected()
 	id, _ := ret.LastInsertId()
-	log.Printf("RowsAffected: %d", rowsaffected)
+	logging.Receive.Info("RowsAffected: %d", zap.Int64("RowsAffected", rowsaffected))
 	return id
 }
 
@@ -100,7 +101,7 @@ func (that MysqlStore) SaveSession(session *SessionBean) int64 {
 func (that MysqlStore) DeleteSession(ID int64) int64 {
 	result, _ := that.mysqlDB.Exec("delete from webconsole_session where id=?", ID)
 	rowsaffected, _ := result.RowsAffected()
-	log.Printf("RowsAffected: %d", rowsaffected)
+	logging.Receive.Info("RowsAffected: %d", zap.Int64("RowsAffected", rowsaffected))
 
 	return rowsaffected
 }

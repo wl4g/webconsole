@@ -16,10 +16,11 @@
 package ssh2
 
 import (
-	"log"
+	"go.uber.org/zap"
 	"net/http"
 	"time"
 	"xcloud-webconsole/pkg/config"
+	"xcloud-webconsole/pkg/logging"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -51,7 +52,7 @@ func NewWebsocketConnectionFunc(c *gin.Context) {
 
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		log.Panic(err)
+		logging.Receive.Panic("error  %+v", zap.Error(err))
 	}
 
 	webssh.AddWebsocket(ws)
