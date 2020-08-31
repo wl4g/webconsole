@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"net/url"
 	"strconv"
@@ -107,7 +106,7 @@ func (dispatcher *WebSSH2Dispatcher) AddSSHConn(conn net.Conn) {
 
 // 处理 websocket 连接发送过来的数据
 func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
-	log.Printf("SSH2 dispatching starting...")
+	logging.Receive.Info("(SSH2 dispatching starting...")
 
 	defer func() {
 		_ = dispatcher.websocket.Close()

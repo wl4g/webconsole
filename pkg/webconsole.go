@@ -18,7 +18,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
+	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 	"time"
@@ -76,7 +76,7 @@ func startConsoleWebServer() *gin.Engine {
 
 	err := engine.Run(config.GlobalConfig.Server.Listen) // Default listen on 0.0.0.0:8080.
 	if err != nil {
-		log.Panic(err)
+		logging.Receive.Panic("error",zap.Error(err))
 	}
 
 	return engine
