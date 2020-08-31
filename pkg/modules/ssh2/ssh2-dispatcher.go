@@ -57,7 +57,7 @@ func NewWebSSH2Dispatcher() *WebSSH2Dispatcher {
 	term := config.GlobalConfig.Server.SSH2Term
 	return &WebSSH2Dispatcher{
 		term:        term.PtyTermType,
-		connTimeout: time.Duration(term.PtyTermConnTimeout),
+		connTimeout: time.Duration(term.PtyTermConnTimeoutSec) * time.Second,
 		buffSize:    term.PtyWSTransferBufferSize,
 	}
 }
@@ -168,6 +168,8 @@ func (dispatcher *WebSSH2Dispatcher) handleDispatchChannel() error {
 			if !strings.Contains(sessionBean.Address, ":") { //fix
 				sessionBean.Address = sessionBean.Address + ":22"
 			}
+			fmt.Printf("Milli [%v]", dispatcher.connTimeout)
+
 			conn, err := net.DialTimeout("tcp", sessionBean.Address, dispatcher.connTimeout)
 			if err != nil {
 				_ = dispatcher.websocket.WriteJSON(&message{Type: messageTypeStderr, Data: []byte("connect error\r\n")})

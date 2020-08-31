@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 	"xcloud-webconsole/pkg/config"
 	utils "xcloud-webconsole/pkg/utils"
 
@@ -40,7 +41,7 @@ func NewMysqlStore() (*MysqlStore, error) {
 		mysqlConfig.DbConnectStr,
 		mysqlConfig.MaxOpenConns,
 		mysqlConfig.MaxIdleConns,
-		mysqlConfig.ConnMaxLifetime,
+		time.Duration(mysqlConfig.ConnMaxLifetimeSec) * time.Second,
 	)
 	//defer mysqlDB.Close(); // @see #Close()
 
@@ -56,7 +57,7 @@ func NewMysqlStore() (*MysqlStore, error) {
 // GetSessionByID find session info by id
 func (that MysqlStore) GetSessionByID(id int64) *SessionBean {
 	session := new(SessionBean)
-	row := that.mysqlDB.QueryRow("select id,name,address,username,password,IFNULL(ssh_key, '') from webconsole_session where id=?", id)
+	row := that.mysqlDB.QueryRow("select id,name,address,username,IFNULL(password, ''),IFNULL(ssh_key, '') from webconsole_session where id=?", id)
 	if err := row.Scan(&session.ID, &session.Name, &session.Address, &session.Username, &session.Password, &session.SSHPrivateKey); err != nil {
 		log.Fatal("GetSessionById", err)
 	}
@@ -68,7 +69,7 @@ func (that MysqlStore) GetSessionByID(id int64) *SessionBean {
 func (that MysqlStore) QuerySessionList() []SessionBean {
 	// 通过切片存储
 	sessions := make([]SessionBean, 0)
-	rows, _ := that.mysqlDB.Query("SELECT * FROM `webconsole_session` limit ?", 100)
+	rows, _ := that.mysqlDB.Query("SELECT id,name,address,username,IFNULL(password, ''),IFNULL(ssh_key, '') FROM `webconsole_session` limit ?", 100)
 
 	// 遍历
 	var session SessionBean

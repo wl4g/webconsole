@@ -1,5 +1,5 @@
 
-const server_admin_url = "http://"+window.location.hostname+":8888/admin";
+const server_admin_url = "http://"+window.location.hostname+":16088/terminal/session";
 
 function openAdd() {
     const node = $('#add');
@@ -54,7 +54,7 @@ function save() {
     let password=$('#password').val();
     let sshKey=$('#sshKey').val();
     let alias=$('#alias').val();
-    $.post(server_admin_url + "/add",{
+    $.post(server_admin_url + "/create",{
         address: address,
         username: username,
         password: password,
@@ -70,7 +70,7 @@ function save() {
 }
 
 function del(id) {
-    $.post(server_admin_url + "/del",{
+    $.post(server_admin_url + "/delete",{
         id: id,
     },function(result){
         list();
@@ -85,7 +85,7 @@ function list() {
         $('#sessionsul').empty();
         for(let i in result.sessions){
             let session = result.sessions[i];
-            let sessionHtml = '<li><a style="cursor:pointer" onclick="ws_connect('+session.Id+')">'+session.Name+'('+session.Username+'@'+session.Address+')</a><button onclick="ws_connect('+session.Id+')">Connect</button><button onclick="del('+session.Id+')">del</button></li>';
+            let sessionHtml = '<li><a style="cursor:pointer" onclick="ws_connect('+session.ID+')">'+session.Name+'('+session.Username+'@'+session.Address+')</a><button onclick="ws_connect('+session.ID+')">Connect</button><button onclick="del('+session.ID+')">del</button></li>';
             $("#sessionsul").append(sessionHtml);
         }
     });

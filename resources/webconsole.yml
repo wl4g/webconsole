@@ -27,7 +27,7 @@ server:
 datasource:
   mysql:
     # 10.0.0.160:3306
-    dbconnectstr: gzsm:gzsm@%#jh?@tcp(10.0.0.160:3306)/devops_dev?charset=utf-8
+    dbconnectstr: gzsm:gzsm@%#jh?@tcp(10.0.0.160:3306)/devops_dev
 
 ### -------------------------------------
 ### Admin configuration.

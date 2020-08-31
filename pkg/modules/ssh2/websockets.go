@@ -34,7 +34,7 @@ func NewWebsocketConnectionFunc(c *gin.Context) {
 
 	webssh.SetTerm(term.PtyTermType)
 	webssh.SetBuffSize(term.PtyWSTransferBufferSize)
-	webssh.SetConnTimeOut(time.Duration(term.PtyTermConnTimeout))
+	webssh.SetConnTimeOut(time.Duration(term.PtyTermConnTimeoutSec) * time.Second )
 	webssh.SetWSSecID(wsSecID)
 
 	upgrader := websocket.Upgrader{

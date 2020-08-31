@@ -79,16 +79,16 @@ func createDefaultProperties() *GlobalProperties {
 			},
 			SSH2Term: SSH2TermProperties{
 				PtyTermType:             DefaultPtyTermType,
-				PtyTermConnTimeout:      DefaultPtyTermConnTimeout,
+				PtyTermConnTimeoutSec:   DefaultPtyTermConnTimeout,
 				PtyWSTransferBufferSize: DefaultPtyWSTransferBufferSize,
 			},
 		},
 		DataSource: DataSourceProperties{
 			Mysql: MysqlProperties{
-				DbConnectStr:    DefaultMysqlConnectStr,
-				MaxOpenConns:    DefaultMysqlMaxOpenConns,
-				MaxIdleConns:    DefaultMysqlMaxIdleConns,
-				ConnMaxLifetime: DefaultMysqlConnMaxLifetime,
+				DbConnectStr:       DefaultMysqlConnectStr,
+				MaxOpenConns:       DefaultMysqlMaxOpenConns,
+				MaxIdleConns:       DefaultMysqlMaxIdleConns,
+				ConnMaxLifetimeSec: DefaultMysqlConnMaxLifetime,
 			},
 			Csv: CsvProperties{
 				DataDir: DefaultCsvDataDir,

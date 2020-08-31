@@ -15,8 +15,6 @@
  */
 package config
 
-import "time"
-
 // ---------------------
 // Repository(datasource) DAO properties
 // ---------------------
@@ -30,10 +28,10 @@ type DataSourceProperties struct {
 // MysqlProperties ...
 type MysqlProperties struct {
 	// e.g: user:password@tcp(host:port)/database?charset=utf-8
-	DbConnectStr    string        `"yaml:"dbconnectstr"`
-	MaxOpenConns    int           `"yaml:"max-open-conns"`
-	MaxIdleConns    int           `"yaml:"max-idle-conns"`
-	ConnMaxLifetime time.Duration `"yaml:"conn-max-lifetime"` // Second
+	DbConnectStr       string `"yaml:"dbconnectstr"`
+	MaxOpenConns       int    `"yaml:"max-open-conns"`
+	MaxIdleConns       int    `"yaml:"max-idle-conns"`
+	ConnMaxLifetimeSec uint32 `"yaml:"conn-max-lifetime"` // Seconds
 }
 
 // CsvProperties ...
@@ -56,7 +54,7 @@ const (
 	DefaultMysqlMaxIdleConns = 10
 
 	// DefaultMysqlConnMaxLifetime ...
-	DefaultMysqlConnMaxLifetime = 90 * time.Second
+	DefaultMysqlConnMaxLifetime = uint32(90)
 
 	// DefaultCsvDataDir ...
 	DefaultCsvDataDir = "/mnt/disk1/webconsole/"

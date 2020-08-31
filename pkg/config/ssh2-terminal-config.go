@@ -19,7 +19,7 @@ package config
 type SSH2TermProperties struct {
 	// 可设置 ansi/linux/vt100/xterm/dumb, 除dumb外其他都有颜色显示, 默认xterm
 	PtyTermType             string `yaml:"pty-term-type"`
-	PtyTermConnTimeout      uint32 `yaml:"pty-term-conn-timeout"` // Second
+	PtyTermConnTimeoutSec   uint32 `yaml:"pty-term-conn-timeout"` // Seconds
 	PtyWSTransferBufferSize uint32 `yaml:"pty-ws-transfer-buffer-size"`
 }
 

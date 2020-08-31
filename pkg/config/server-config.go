@@ -45,7 +45,7 @@ const (
 	DefaultServeListen = ":16088"
 
 	// DefaultCorsAllowOrigins ...
-	DefaultCorsAllowOrigins = "http://localhost:16088,https://webconsole.wl4g.debug,https://webconsole.wl4g.com,"
+	DefaultCorsAllowOrigins = "*"
 
 	// DefaultCorsAllowCredentials ...
 	DefaultCorsAllowCredentials = false
