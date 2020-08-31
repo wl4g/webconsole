@@ -11,7 +11,10 @@
             "mode": "auto",
             "program": "${fileDirname}",
             "env": {},
-            "args": []
+            "args": [
+                "-c",
+                "${fileDirname}/../resources/webconsole.yml"
+            ]
         }
     ]
 }

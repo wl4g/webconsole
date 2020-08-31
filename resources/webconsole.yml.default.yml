@@ -25,7 +25,15 @@ server:
     allow-headers: Authorization,Content-Length,X-CSRF-Token,Token,session,X_Requested_With,Accept,Origin,Host,Connection,Accept-Encoding,Accept-Language,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Pragma
     expose-headers: Content-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Pragma,
     max-age: 172800
+  ssh2-term:
+    # Options(ansi/linux/vt100/xterm/dumb) Except for dumb, all the others have color display, default: xterm
+    pty-term-type: "xterm"
+    pty-term-conn-timeout: 5 # Seconds
+    pty-ws-transfer-buffer-size: 8192
 
+### -------------------------------------
+### DataSource configuration.
+### -------------------------------------
 datasource:
   mysql:
     # user:password@tcp(host:port)/database?charset=utf-8

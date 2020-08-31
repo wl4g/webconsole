@@ -40,7 +40,7 @@ var (
 // InitGlobalConfig global config properties.
 func InitGlobalConfig(path string) {
 	// Create default config.
-	GlobalConfig = *createDefaultProperties()
+	globalConfig := createDefaultProperties()
 
 	conf, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -48,14 +48,17 @@ func InitGlobalConfig(path string) {
 		panic(err)
 	}
 
-	err = yaml.Unmarshal(conf, &GlobalConfig)
+	err = yaml.Unmarshal(conf, globalConfig)
 	if err != nil {
 		fmt.Printf("Unmarshal config '%s' error! %s", path, err)
 		panic(err)
 	}
 
 	// Post properties.
-	afterPropertiesSet(&GlobalConfig)
+	afterPropertiesSet(globalConfig)
+
+	// Sets Global configuration
+	GlobalConfig = *globalConfig
 }
 
 // Create default configuration properties.

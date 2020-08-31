@@ -28,12 +28,12 @@ type ServerProperties struct {
 
 // CorsProperties ...
 type CorsProperties struct {
-	AllowOrigins     string `"yaml:"allow-origins"`
-	AllowCredentials bool   `"yaml:"allow-credentials"`
-	AllowMethods     string `"yaml:"allow-methods"`
-	AllowHeaders     string `"yaml:"allow-headers"`
-	ExposeHeaders    string `"yaml:"expose-headers"`
-	MaxAge           int    `"yaml:"max-age"` // Seconds
+	AllowOrigins     string `yaml:"allow-origins"`
+	AllowCredentials bool   `yaml:"allow-credentials"`
+	AllowMethods     string `yaml:"allow-methods"`
+	AllowHeaders     string `yaml:"allow-headers"`
+	ExposeHeaders    string `yaml:"exposes-headers"`
+	MaxAge           int    `yaml:"max-age"` // Seconds
 }
 
 const (
