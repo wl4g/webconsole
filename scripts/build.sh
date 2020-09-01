@@ -15,6 +15,6 @@
 # -------------------------------------------------------------------------
 # --- Compiling Mac and Windows 64-bit executable programs under Linux. ---
 # -------------------------------------------------------------------------
+#GOOS=darwin|windows|linux
 cd ../pkg/ && CGO_ENABLED=0 GOARCH=amd64
-#GOOS=darwin go build -o ../bin/webconsole
-GOOS=linux go build -o ../bin/webconsole
+GOOS=windows go build -o ../bin/webconsole_${GOOS}_${GOARCH}.exe ..\pkg\
