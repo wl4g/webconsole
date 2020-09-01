@@ -31,7 +31,7 @@ type MysqlProperties struct {
 	DbConnectStr       string `yaml:"dbconnectstr"`
 	MaxOpenConns       int    `yaml:"max-open-conns"`
 	MaxIdleConns       int    `yaml:"max-idle-conns"`
-	ConnMaxLifetimeSec uint32 `yaml:"conn-max-lifetime"` // Seconds
+	ConnMaxLifetimeSec uint32 `yaml:"conn-max-lifetime-sec"` // Seconds
 }
 
 // CsvProperties ...
@@ -53,8 +53,8 @@ const (
 	// DefaultMysqlMaxIdleConns ...
 	DefaultMysqlMaxIdleConns = 10
 
-	// DefaultMysqlConnMaxLifetime ...
-	DefaultMysqlConnMaxLifetime = uint32(90)
+	// DefaultMysqlConnMaxLifetimeSec ...
+	DefaultMysqlConnMaxLifetimeSec = uint32(90)
 
 	// DefaultCsvDataDir ...
 	DefaultCsvDataDir = "/mnt/disk1/webconsole/"

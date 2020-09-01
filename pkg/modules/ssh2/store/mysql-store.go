@@ -19,11 +19,13 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"go.uber.org/zap"
+	"strings"
 	"time"
 	"xcloud-webconsole/pkg/config"
 	"xcloud-webconsole/pkg/logging"
 	utils "xcloud-webconsole/pkg/utils"
+
+	"go.uber.org/zap"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -42,7 +44,7 @@ func NewMysqlStore() (*MysqlStore, error) {
 		mysqlConfig.DbConnectStr,
 		mysqlConfig.MaxOpenConns,
 		mysqlConfig.MaxIdleConns,
-		time.Duration(mysqlConfig.ConnMaxLifetimeSec) * time.Second,
+		time.Duration(mysqlConfig.ConnMaxLifetimeSec)*time.Second,
 	)
 	//defer mysqlDB.Close(); // @see #Close()
 
@@ -109,4 +111,17 @@ func (that MysqlStore) DeleteSession(ID int64) int64 {
 // Close ...
 func (that MysqlStore) Close() error {
 	return that.mysqlDB.Close()
+}
+
+// Stat ...
+func (that *MysqlStore) Stat() *Stat {
+	connStr := config.GlobalConfig.DataSource.Mysql.DbConnectStr
+	// Security key(password) desensitization
+	colonIdx := strings.Index(connStr, ":")
+	atIdx := strings.Index(connStr, "@tcp")
+	connStr = connStr[0:colonIdx+1] + "******" + connStr[atIdx:len(connStr)]
+	return &Stat{
+		DbConnectStr: connStr,
+		ActiveConns:  that.mysqlDB.Stats().OpenConnections,
+	}
 }

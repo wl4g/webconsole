@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	tools "xcloud-webconsole/pkg/utils"
+	utils "xcloud-webconsole/pkg/utils"
 
 	"gopkg.in/yaml.v2"
 )
@@ -39,6 +39,15 @@ var (
 
 // InitGlobalConfig global config properties.
 func InitGlobalConfig(path string) {
+	// Check configuraion path
+	if !utils.ExistsFileOrDir(path) {
+		path = defaultConfPath // fallback use default
+		if !utils.ExistsFileOrDir(path) {
+			panic(fmt.Sprintf("No such configuration file '%s'", path))
+		}
+	}
+	fmt.Printf("Load configuration file '%s'", path)
+
 	// Create default config.
 	globalConfig := createDefaultProperties()
 
@@ -79,7 +88,7 @@ func createDefaultProperties() *GlobalProperties {
 			},
 			SSH2Term: SSH2TermProperties{
 				PtyTermType:             DefaultPtyTermType,
-				PtyTermConnTimeoutSec:   DefaultPtyTermConnTimeout,
+				PtyTermConnTimeoutSec:   DefaultPtyTermConnTimeoutSec,
 				PtyWSTransferBufferSize: DefaultPtyWSTransferBufferSize,
 			},
 		},
@@ -88,7 +97,7 @@ func createDefaultProperties() *GlobalProperties {
 				DbConnectStr:       DefaultMysqlConnectStr,
 				MaxOpenConns:       DefaultMysqlMaxOpenConns,
 				MaxIdleConns:       DefaultMysqlMaxIdleConns,
-				ConnMaxLifetimeSec: DefaultMysqlConnMaxLifetime,
+				ConnMaxLifetimeSec: DefaultMysqlConnMaxLifetimeSec,
 			},
 			Csv: CsvProperties{
 				DataDir: DefaultCsvDataDir,
@@ -127,5 +136,9 @@ func afterPropertiesSet(globalConfig *GlobalProperties) {
 
 // RefreshConfig Refresh global config.
 func RefreshConfig(config *GlobalProperties) {
-	tools.CopyProperties(&config, &GlobalConfig)
+	utils.CopyProperties(&config, &GlobalConfig)
 }
+
+const (
+	defaultConfPath = "/etc/webconsole.yml"
+)

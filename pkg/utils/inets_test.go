@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ~ 2025 the original author or authors<Wanglsir@gmail.com, 983708408@qq.com>.
+ * Copyright 2017 ~ 2025 the original author or author<Wanglsir@gmail.com, 983708408@qq.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main
+package utils
 
 import (
-	"context"
-	"flag"
+	"fmt"
+	"testing"
 )
 
-var (
-	webConsole = &WebConsole{}
-)
-
-func main() {
-	var conf string
-	// Pars configuration
-	flag.StringVar(&conf, "c", "", "WebConsole configuration path")
-	flag.Parse()
-	// flag.Usage()
-
-	// Start server...
-	webConsole.StartServe(context.Background(), conf)
+func TestGetFirstNonLoopbackIP(t *testing.T) {
+	ip, err := GetFirstNonLoopbackIP()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(ip.String())
 }

@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main
+package utils
 
 import (
-	"context"
-	"flag"
+	"os"
 )
 
-var (
-	webConsole = &WebConsole{}
-)
-
-func main() {
-	var conf string
-	// Pars configuration
-	flag.StringVar(&conf, "c", "", "WebConsole configuration path")
-	flag.Parse()
-	// flag.Usage()
-
-	// Start server...
-	webConsole.StartServe(context.Background(), conf)
+//ExistsFileOrDir ...
+func ExistsFileOrDir(path string) bool {
+	_, err := os.Stat(path) // os.Stat获取文件信息
+	if err != nil {
+		if os.IsExist(err) {
+			return true
+		}
+		return false
+	}
+	return true
 }

@@ -21,8 +21,8 @@ package config
 
 // LoggingProperties Multi log properties.
 type LoggingProperties struct {
-	DateFormatPattern string                       `yaml:"dateformat-pattern"`
-	LogItems          map[string]LogItemProperties `yaml:"log-items"`
+	DateFormatPattern string                       `yaml:"date-format-pattern"`
+	LogItems          map[string]LogItemProperties `yaml:"items"`
 }
 
 // LogItemProperties LogItem properties.

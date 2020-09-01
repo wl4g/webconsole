@@ -1,21 +1,21 @@
 # XCloud WebConsole
-A lightweight enterprise Web Console terminal, which brings together the advantages of most similar products, supporting SSH2/(RDP/RFB/Telnet) protocol, Audit and screen recording function, etc
+一个轻量的企业级Web的控制终端程序，汇集了大多数同类产品优点于一身，支持SSH2、(RDP/RFB/Telnet)、审计和录屏等
 
-[中文文档](README_CN.md).
+English version goes [here](README.md).
 
-### Quick start
+### 快速开始
 
-##### 1. Installing project
+##### 1. 安装
 ```
-git clone https://github.com/wl4g/xcloud-webconsole.git # upstream, latest
+git clone https://github.com/wl4g/xcloud-webconsole.git # 上游，最新
 # git clone https://gitee.com/wl4g/xcloud-webconsole.git
 cd xcloud-webconsole/scripts
-./build.sh  # Cross compiling to Windows
-# build.bat # Cross compiling to Linux
+./build.sh  # 交叉编译为Windows程序
+# build.bat # 交叉编译为Linux程序
 ```
 
-##### 2. Deploying to nginx https. (Optional)
-Because webconsole is based on HTML, the copy and paste functions of the browser are limited by the security mechanism and can only be used under HTTPS, Of course, if you don't want to be troublesome, this step can be ignored. You can use HTTP local test directly, but you can't use the copy and paste function of the browser
+##### 2. 部署到nginx支持https. (可选)
+因为webconsole是基于HTML的，浏览器的复制和粘贴功能受到安全机制的限制，只能在HTTPS下使用，当然，如果不想麻烦的话，这一步可以忽略。您可以直接使用HTTP本地测试，但不能使用浏览器的复制和粘贴功能。
 
 ```
 sudo mkdir -p /etc/nginx/conf.d && \
@@ -64,17 +64,17 @@ sudo chmod 755 /etc/nginx/conf.d/webconsole.conf
 sudo systemctl restart nginx
 ```
 
-##### 3. Installing test CA certificate. (Optional, Follow step 2)
-- Install the test CA certificate to the system and chrome.</br>
-  for example (Chrome84.x): </br>
+##### 3. 安装测试CA跟证书 (可选, 跟随步骤2)
+- 将CA跟证书安装到系统及chrome，使其受信任.</br>
+  例如在Chrome84.x中: </br>
 ```
 chrome://settings/security
 ```
-Management Certificate -> Trusted certification authority -> Imports </br>
-Then restart chrome and try to access: https://webconsole.wl4g.debug
+管理证书 -> 受信任的根证书颁发机构 -> 导入 </br>
+然后重启chrome浏览器尝试访问: https://webconsole.wl4g.debug
 
 
-### Collect metrics
+### 采集度量及指标
 ```
 curl http://localhost:16089/metrics
 
@@ -99,17 +99,16 @@ virtual_total_memory 8.50089984
 ```
 
 
-### Features
+### 特性及说明
 
-- It is designed as a native JavaScript class library, which can be easily integrated with React/Vue/AngularJS and other frameworks
-- It can run on Android / IOS and any other terminal that can render HTML. It can almost completely replace the shell client based on the installation program
-- Fully support lrzsz command set (implemented based on zmodem)
-- Enhanced support for mobile terminal copy, paste, fast forward, backward and other key combination command, user-friendly operation habits
-- Seamless docking Prometheus metric acquisition
+- 它被设计成一个原生JavaScript类库，可以很容易地与React/Vue/AngularJS和其他框架集成
+- 它可以运行在Android/IOS和任何其他可以呈现HTML的终端上。它几乎可以完全取代基于安装程序的shell客户端
+- 完全支持lrzsz命令集（基于zmodem实现）
+- 增强了对移动终端的复制、粘贴、快进、后退等按键组合命令的支持，用户友好的操作习惯
+- 无缝对接 prometheus 度量采集
 
+### 待办清单
 
-### TODO
-
-- [√] Completely unify the daily output of each component, such as `gin` framework.
-- Enhance the administrator functions of webconsole service, such as its own health/metrics/indicator(CPU/Mem/Network/Connections...) And more detailed indicators
-- In order to realize the remote image UI control protocol compatible with windows RDP(Remote Desktop Protocol) based on Web, And RFB/Telnet
+- [√] 完全统一每个组件的日常输出，如“gin”框架。
+- 增强webconsole服务的管理员功能，例如自身的health/metrics/indicator（CPU/Mem/Network/Connections…）和更详细的指示器
+- 为了实现与windows RDP（远程桌面协议）兼容的基于Web的远程图像UI控制协议, 以及RFB/Telnet等

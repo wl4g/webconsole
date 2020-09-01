@@ -24,6 +24,7 @@ import (
 
 // Stopper ...
 type Stopper struct {
+	sigs          []os.Signal
 	cancelContext context.Context
 	cancelFunc    context.CancelFunc
 	handlers      []StopHandlerFunc
@@ -32,9 +33,18 @@ type Stopper struct {
 // StopHandlerFunc ...
 type StopHandlerFunc func()
 
+// NewDefault ...
+func NewDefault(ctx context.Context, handlers ...StopHandlerFunc) *Stopper {
+	// Default listening signals
+	sigs := []os.Signal{syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM, syscall.SIGQUIT}
+	stopper := &Stopper{sigs: sigs, handlers: handlers}
+	stopper.cancelContext, stopper.cancelFunc = context.WithCancel(ctx)
+	return stopper
+}
+
 // NewStopper ...
-func NewStopper(ctx context.Context, handlers ...StopHandlerFunc) *Stopper {
-	stopper := &Stopper{handlers: handlers}
+func NewStopper(ctx context.Context, sigs []os.Signal, handlers ...StopHandlerFunc) *Stopper {
+	stopper := &Stopper{sigs: sigs, handlers: handlers}
 	stopper.cancelContext, stopper.cancelFunc = context.WithCancel(ctx)
 	return stopper
 }
@@ -57,6 +67,11 @@ func (stopper *Stopper) WaitForExit() {
 	select {
 	case <-stopper.cancelContext.Done():
 	}
+}
+
+// GetCancelContext ...
+func (stopper *Stopper) GetCancelContext() *context.Context {
+	return &stopper.cancelContext
 }
 
 // Stop ...

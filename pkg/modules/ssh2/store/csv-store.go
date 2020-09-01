@@ -17,12 +17,13 @@ package store
 
 import (
 	"encoding/csv"
-	"go.uber.org/zap"
 	"io"
 	"os"
 	"strconv"
 	"xcloud-webconsole/pkg/config"
 	"xcloud-webconsole/pkg/logging"
+
+	"go.uber.org/zap"
 )
 
 var (
@@ -121,4 +122,9 @@ func (that CsvStore) DeleteSession(sessionID int64) int64 {
 // Close ...
 func (that CsvStore) Close() error {
 	return nil
+}
+
+// Stat ...
+func (that *CsvStore) Stat() *Stat {
+	return &Stat{}
 }

@@ -17,7 +17,6 @@ package utils
 
 import (
 	"database/sql"
-	"log"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -27,8 +26,7 @@ import (
 func OpenMysqlConnection(dbConnectStr string,
 	maxOpenConns int, maxIdleConns int,
 	connMaxLifetime time.Duration) (*sql.DB, error) {
-
-	log.Print("Connecting to mysql with dbConnectStr: %s, maxOpenConns: %s, maxIdleConns: %s, connMaxLifetime: %s", dbConnectStr, maxOpenConns, maxIdleConns, connMaxLifetime)
+	//fmt.Print("Connecting to mysql with dbConnectStr: %s, maxOpenConns: %s, maxIdleConns: %s, connMaxLifetime: %s", dbConnectStr, maxOpenConns, maxIdleConns, connMaxLifetime)
 
 	mysqlDB, err1 := sql.Open("mysql", dbConnectStr)
 	//defer mysqlDB.Close();

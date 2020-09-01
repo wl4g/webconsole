@@ -29,6 +29,7 @@ type SSH2Store interface {
 	SaveSession(session *SessionBean) int64
 	DeleteSession(sessionID int64) int64
 	io.Closer
+	Stat() *Stat
 }
 
 // SessionBean User terminal session info bean
@@ -41,13 +42,17 @@ type SessionBean struct {
 	SSHPrivateKey string `db:"ssh_key"`
 }
 
-//
 // --- Delegate Store. ---
-//
 
 // DelegateSSH2Store ...
 type DelegateSSH2Store struct {
 	orgin *SSH2Store
+}
+
+// Stat ...
+type Stat struct {
+	DbConnectStr string
+	ActiveConns  int
 }
 
 var (
@@ -61,8 +66,7 @@ func GetDelegate() *DelegateSSH2Store {
 		singletonDelegate, err = newDelegateSSH2Store()
 	}
 	if err != nil {
-		logging.Main.Panic("Unable get or create DelegateSSH2Store, cause by: %s",
-			zap.String("err", err.Error()))
+		logging.Main.Panic("Unable get or create delegate store", zap.String("err", err.Error()))
 		return nil
 	}
 	return singletonDelegate
@@ -73,13 +77,13 @@ func newDelegateSSH2Store() (*DelegateSSH2Store, error) {
 	switch 1 {
 	case 1:
 		if mysql, err1 := NewMysqlStore(); err1 == nil {
-			orginStore = *mysql
+			orginStore = mysql
 		} else {
 			return nil, err1
 		}
 	default:
 		if csv, err2 := NewCsvStore(); err2 == nil {
-			orginStore = *csv
+			orginStore = csv
 		} else {
 			return nil, err2
 		}
@@ -112,4 +116,9 @@ func (store *DelegateSSH2Store) DeleteSession(sessionID int64) int64 {
 // Close ...
 func (store *DelegateSSH2Store) Close() error {
 	return (*store.orgin).Close()
+}
+
+// Stat ...
+func (store *DelegateSSH2Store) Stat() *Stat {
+	return (*store.orgin).Stat()
 }

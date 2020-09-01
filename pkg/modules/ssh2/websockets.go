@@ -16,14 +16,23 @@
 package ssh2
 
 import (
-	"go.uber.org/zap"
 	"net/http"
+	"sync"
 	"time"
 	"xcloud-webconsole/pkg/config"
 	"xcloud-webconsole/pkg/logging"
 
+	"container/list"
+
+	"go.uber.org/zap"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+)
+
+var (
+	statMutex             sync.Mutex
+	globalStatDispatchers list.List
 )
 
 // NewWebsocketConnectionFunc ...
@@ -35,7 +44,7 @@ func NewWebsocketConnectionFunc(c *gin.Context) {
 
 	webssh.SetTerm(term.PtyTermType)
 	webssh.SetBuffSize(term.PtyWSTransferBufferSize)
-	webssh.SetConnTimeOut(time.Duration(term.PtyTermConnTimeoutSec) * time.Second )
+	webssh.SetConnTimeOut(time.Duration(term.PtyTermConnTimeoutSec) * time.Second)
 	webssh.SetWSSecID(wsSecID)
 
 	upgrader := websocket.Upgrader{
@@ -56,4 +65,14 @@ func NewWebsocketConnectionFunc(c *gin.Context) {
 	}
 
 	webssh.AddWebsocket(ws)
+
+	// Addition dispatcher
+	statMutex.Lock()
+	globalStatDispatchers.PushBack(webssh)
+	defer statMutex.Unlock()
+}
+
+// GetStatDispatchers ...
+func GetStatDispatchers() *list.List {
+	return &globalStatDispatchers
 }

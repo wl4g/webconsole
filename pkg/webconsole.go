@@ -24,6 +24,7 @@ import (
 	config "xcloud-webconsole/pkg/config"
 	logging "xcloud-webconsole/pkg/logging"
 	ssh2 "xcloud-webconsole/pkg/modules/ssh2"
+	"xcloud-webconsole/pkg/modules/ssh2/store"
 	"xcloud-webconsole/pkg/utils"
 
 	"go.uber.org/zap"
@@ -39,8 +40,14 @@ type WebConsole struct {
 
 // StartServe ...
 func (wc *WebConsole) StartServe(ctx context.Context, conf string) {
-	wc.stopper = utils.NewStopper(ctx, func() {
+	wc.stopper = utils.NewDefault(ctx, func() {
 		logging.Main.Info("Stopping ...")
+		// Store closing
+		if err1 := store.GetDelegate().Close(); err1 != nil {
+			logging.Main.Error("Closing store resource failure", zap.Error(err1))
+		}
+		// TODO Closing others resources gracefully
+		// ...
 	})
 
 	// Init global config.
@@ -87,6 +94,7 @@ func (wc *WebConsole) registerSSH2Handlers(engine *gin.Engine) {
 	engine.GET(ssh2.DefaultSSH2APISessionQueryURI, ssh2.QuerySSH2SessionsFunc)
 	engine.POST(ssh2.DefaultSSH2APISessionAddURI, ssh2.AddSSH2SessionFunc)
 	engine.POST(ssh2.DefaultSSH2APISessionDeleteURI, ssh2.DeleteSSH2SessionFunc)
+	engine.POST(ssh2.DefaultSSH2APISessionCloseURI, ssh2.CloseSSH2SessionFunc)
 }
 
 // createCorsHandler ...

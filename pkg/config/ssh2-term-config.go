@@ -19,7 +19,7 @@ package config
 type SSH2TermProperties struct {
 	// 可设置 ansi/linux/vt100/xterm/dumb, 除dumb外其他都有颜色显示, 默认xterm
 	PtyTermType             string `yaml:"pty-term-type"`
-	PtyTermConnTimeoutSec   uint32 `yaml:"pty-term-conn-timeout"` // Seconds
+	PtyTermConnTimeoutSec   uint32 `yaml:"pty-term-conn-timeout-sec"` // Seconds
 	PtyWSTransferBufferSize uint32 `yaml:"pty-ws-transfer-buffer-size"`
 }
 
@@ -27,8 +27,8 @@ const (
 	// DefaultPtyTermType ...
 	DefaultPtyTermType = "xterm"
 
-	// DefaultPtyTermConnTimeout ...
-	DefaultPtyTermConnTimeout = uint32(5) // Seconds
+	// DefaultPtyTermConnTimeoutSec ...
+	DefaultPtyTermConnTimeoutSec = uint32(5) // Seconds
 
 	// DefaultPtyWSTransferBufferSize ...
 	DefaultPtyWSTransferBufferSize = uint32(8192)

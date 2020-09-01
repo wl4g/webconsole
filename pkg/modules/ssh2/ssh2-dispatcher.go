@@ -35,10 +35,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-var (
-	WhileKeyCode = []string{"+", "%"}
-)
-
 // WebSSH2Dispatcher In order to realize remote command control protocol compatible with SSH2 protocol based on Web
 type WebSSH2Dispatcher struct {
 	id                               string
