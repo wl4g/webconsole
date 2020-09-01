@@ -17,6 +17,12 @@ cd xcloud-webconsole/scripts
 ##### 2. Deploying to nginx https. (Optional)
 Because webconsole is based on HTML, the copy and paste functions of the browser are limited by the security mechanism and can only be used under HTTPS, Of course, if you don't want to be troublesome, this step can be ignored. You can use HTTP local test directly, but you can't use the copy and paste function of the browser
 
+
+###### 2.1 Add hosts
+```
+127.0.0.1   webconsole.wl4g.debug
+```
+
 ```
 sudo mkdir -p /etc/nginx/conf.d && \
 cat > /etc/nginx/conf.d/webconsole.conf <<EOF
@@ -41,7 +47,7 @@ server {
 
 # WebConsole APIs.
 server {
-    listen 16088 ssl;
+    listen 26088 ssl;
     server_name  webconsole.sunwuu.fat;
     ssl_certificate   certs/_wildcard.wl4g.debug.pem;
     ssl_certificate_key  certs/_wildcard.wl4g.debug-key.pem;
@@ -55,7 +61,7 @@ server {
         proxy_set_header Connection "upgrade";     
         proxy_set_header X-real-ip $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_pass http://10.0.0.172:16088;
+        proxy_pass http://127.0.0.1:16088;
     }
 }
 EOF
@@ -64,7 +70,7 @@ sudo chmod 755 /etc/nginx/conf.d/webconsole.conf
 sudo systemctl restart nginx
 ```
 
-##### 3. Installing test CA certificate. (Optional, Follow step 2)
+##### 2.2. Installing test CA certificate. (Optional, Follow step 2)
 - Install the test CA certificate to the system and chrome.</br>
   for example (Chrome84.x): </br>
 ```
@@ -74,7 +80,7 @@ Management Certificate -> Trusted certification authority -> Imports </br>
 Then restart chrome and try to access: https://webconsole.wl4g.debug
 
 
-### Collect metrics
+### Collect prometheus metrics
 ```
 curl http://localhost:16089/metrics
 
@@ -108,8 +114,18 @@ virtual_total_memory 8.50089984
 - Seamless docking Prometheus metric acquisition
 
 
+### Primary Dependencies
+- High performance logging framework [github.com/gin-contrib/zap](github.com/gin-contrib/zap)
+- Widely used Web framework [github.com/gin-gonic/gin](github.com/gin-gonic/gin)
+- Prometheus index monitoring and collection framework [github.com/prometheus](github.com/prometheus)
+- Host index collection tool [github.com/shirou/gopsutil](github.com/shirou/gopsutil)
+- High performance JSON serialization framework [github.com/json-iterator/go](github.com/json-iterator/go)
+- Websocket framework [github.com/gorilla/websocket](github.com/gorilla/websocket)
+
+
 ### TODO
 
 - [√] Completely unify the daily output of each component, such as `gin` framework.
-- Enhance the administrator functions of webconsole service, such as its own health/metrics/indicator(CPU/Mem/Network/Connections...) And more detailed indicators
+- Enhance the administrator functions of webconsole service, such as its own health/metrics/indicator(CPU/Mem/Network/Connections...) And more detailed indicators.
+- canvas + coss Audit screen recording function.
 - In order to realize the remote image UI control protocol compatible with windows RDP(Remote Desktop Protocol) based on Web, And RFB/Telnet

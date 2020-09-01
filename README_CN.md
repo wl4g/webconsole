@@ -5,7 +5,7 @@ English version goes [here](README.md).
 
 ### 快速开始
 
-##### 1. 安装
+#### 1. 安装
 ```
 git clone https://github.com/wl4g/xcloud-webconsole.git # 上游，最新
 # git clone https://gitee.com/wl4g/xcloud-webconsole.git
@@ -14,8 +14,13 @@ cd xcloud-webconsole/scripts
 # build.bat # 交叉编译为Linux程序
 ```
 
-##### 2. 部署到nginx支持https. (可选)
-因为webconsole是基于HTML的，浏览器的复制和粘贴功能受到安全机制的限制，只能在HTTPS下使用，当然，如果不想麻烦的话，这一步可以忽略。您可以直接使用HTTP本地测试，但不能使用浏览器的复制和粘贴功能。
+#### 2. 部署到nginx支持https. (可选)
+因为webconsole是基于HTML的，浏览器的复制和粘贴功能受到安全机制的限制，只能在HTTPS下使用，当然若不想麻烦，也可忽略此步骤，直接使用HTTP本地测试，只是不能使用浏览器的复制和粘贴功能。
+
+###### 2.1 添加hosts
+```
+127.0.0.1   webconsole.wl4g.debug
+```
 
 ```
 sudo mkdir -p /etc/nginx/conf.d && \
@@ -41,7 +46,7 @@ server {
 
 # WebConsole APIs.
 server {
-    listen 16088 ssl;
+    listen 26088 ssl;
     server_name  webconsole.sunwuu.fat;
     ssl_certificate   certs/_wildcard.wl4g.debug.pem;
     ssl_certificate_key  certs/_wildcard.wl4g.debug-key.pem;
@@ -55,7 +60,7 @@ server {
         proxy_set_header Connection "upgrade";     
         proxy_set_header X-real-ip $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_pass http://10.0.0.172:16088;
+        proxy_pass http://127.0.0.1:16088;
     }
 }
 EOF
@@ -64,9 +69,9 @@ sudo chmod 755 /etc/nginx/conf.d/webconsole.conf
 sudo systemctl restart nginx
 ```
 
-##### 3. 安装测试CA跟证书 (可选, 跟随步骤2)
+###### 2.2. 安装测试CA跟证书 (可选, 跟随步骤2)
 - 将CA跟证书安装到系统及chrome，使其受信任.</br>
-  例如在Chrome84.x中: </br>
+例如在Chrome84.x中: </br>
 ```
 chrome://settings/security
 ```
@@ -74,7 +79,7 @@ chrome://settings/security
 然后重启chrome浏览器尝试访问: https://webconsole.wl4g.debug
 
 
-### 采集度量及指标
+### 度量及指标
 ```
 curl http://localhost:16089/metrics
 
@@ -98,6 +103,10 @@ virtual_free_memory 1.731424256
 virtual_total_memory 8.50089984
 ```
 
+### 运行环境
+- 客户端建议使用 Chrome 40+、Firefox 38+、Safari 9+
+- 二次开发建议基于 Golang 1.13+ 构建
+- 本程序只能对 Unix/Linux 类的操作系统的 SSH 协议的 OS 远程操作（Windows RDP支持需参考具体发行版是否有RDP实现）
 
 ### 特性及说明
 
@@ -107,8 +116,19 @@ virtual_total_memory 8.50089984
 - 增强了对移动终端的复制、粘贴、快进、后退等按键组合命令的支持，用户友好的操作习惯
 - 无缝对接 prometheus 度量采集
 
+
+### 主要依赖项目
+- 高性能日志框架 [github.com/gin-contrib/zap](github.com/gin-contrib/zap)
+- 通用web框架 [github.com/gin-gonic/gin](github.com/gin-gonic/gin)
+- 普罗米修斯 [github.com/prometheus](github.com/prometheus)
+- 主机指标采集 [github.com/shirou/gopsutil](github.com/shirou/gopsutil)
+- JSON序列化 [github.com/json-iterator/go](github.com/json-iterator/go)
+- Websocket处理 [github.com/gorilla/websocket](github.com/gorilla/websocket)
+
+
 ### 待办清单
 
 - [√] 完全统一每个组件的日常输出，如“gin”框架。
 - 增强webconsole服务的管理员功能，例如自身的health/metrics/indicator（CPU/Mem/Network/Connections…）和更详细的指示器
+- canvas + coss 审计录屏功能
 - 为了实现与windows RDP（远程桌面协议）兼容的基于Web的远程图像UI控制协议, 以及RFB/Telnet等

@@ -1,5 +1,5 @@
 
-const server_admin_url = "http://"+window.location.hostname+":16088/terminal/session";
+const server_admin_url = "http://"+window.location.hostname+":26088/terminal/session";
 
 function openAdd() {
     const node = $('#add');

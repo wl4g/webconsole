@@ -14,7 +14,7 @@ function readFile(element_id, res_id) {
     const objFile = document.getElementById(element_id);
     if(objFile.value === '') {
 		return
-    }
+	}
     // 获取文件
     const files = objFile.files;
     if (files[0].size > 16 * 1024) {

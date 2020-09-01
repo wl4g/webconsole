@@ -1,6 +1,6 @@
 module xcloud-webconsole
 
-go 1.13
+go 1.14
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
@@ -12,9 +12,7 @@ require (
 	github.com/json-iterator/go v1.1.10
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.7.1
-	github.com/prometheus/common v0.10.0
-	github.com/shirou/gopsutil v2.20.7+incompatible
-	github.com/sqs/goreturns v0.0.0-20181028201513-538ac6014518
+	github.com/shirou/gopsutil v2.20.8+incompatible
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
