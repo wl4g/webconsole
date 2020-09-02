@@ -22,12 +22,11 @@ cd $BASE_DIR/..
 
 export CGO_ENABLED=0
 export GOARCH=amd64
-export GOOS=windows # linux|darwin|windows
+export GOOS=linux # linux|darwin|windows
 
 if [ "$GOOS" == "windows" ]; then
   SUFFIX=".exe"
 fi
 
-go build -gcflags=-trimpath=$GOPATH -asmflags=-trimpath=$GOPATH -ldflags "-w -s" -o ./bin/webconsole_${GOOS}_${GOARCH}${SUFFIX} ./pkg/
-
+go build -gcflags=-trimpath=${GOPATH} -asmflags=-trimpath=${GOPATH} --ldflags "-s -w" -o ./bin/webconsole_${GOOS}_${GOARCH}${SUFFIX} ./pkg/
 

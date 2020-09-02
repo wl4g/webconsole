@@ -34,5 +34,5 @@ IF ["%GOOS%"] EQU ["windows"] (
   SET SUFFIX=".exe"
 )
 
-go build -gcflags=-trimpath=$GOPATH -asmflags=-trimpath=$GOPATH -ldflags "-w -s" -o ..\bin\webconsole_%GOOS%_%GOARCH%%SUFFIX% .\pkg\
+go build -gcflags=-trimpath=%GOPATH% -asmflags=-trimpath=%GOPATH% -ldflags "-w -s" -o .\bin\webconsole_%GOOS%_%GOARCH%%SUFFIX% .\pkg\
 
