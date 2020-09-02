@@ -13,8 +13,21 @@
 # limitations under the License.
 
 # -------------------------------------------------------------------------
-# --- Compiling Mac and Windows 64-bit executable programs under Linux. ---
+# --- Compiling Mac and Windows executable programs under Linux. ---
 # -------------------------------------------------------------------------
-#GOOS=darwin|windows|linux
-cd ../pkg/ && CGO_ENABLED=0 GOARCH=amd64
-GOOS=windows go build -o ../bin/webconsole_${GOOS}_${GOARCH}.exe ..\pkg\
+set -e
+
+BASE_DIR=$(dirname $0)
+cd $BASE_DIR/..
+
+export CGO_ENABLED=0
+export GOARCH=amd64
+export GOOS=windows # linux|darwin|windows
+
+if [ "$GOOS" == "windows" ]; then
+  SUFFIX=".exe"
+fi
+
+go build -gcflags=-trimpath=$GOPATH -asmflags=-trimpath=$GOPATH -ldflags "-w -s" -o ./bin/webconsole_${GOOS}_${GOARCH}${SUFFIX} ./pkg/
+
+

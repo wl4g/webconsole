@@ -14,11 +14,25 @@ rem See the License for the specific language governing permissions and
 rem limitations under the License.
 
 rem -------------------------------------------------------------------------
-rem --- Compiling Mac and Linux 64-bit executable programs under Windows. ---
+rem ---   Compiling Mac and Linux executable programs under Windows.      ---
 rem -------------------------------------------------------------------------
+
+rem Using pushd popd to set BASE_DIR to the absolute path
+pushd %~dp0..\..
+set BASE_DIR=%CD%
+popd
+
+CD %BASE_DIR%
+
 SET CGO_ENABLED=0
-rem GOOS=darwin
-rem GOOS=windows
+rem SET GOOS=darwin
 SET GOOS=linux
+rem SET GOOS=windows
 SET GOARCH=amd64
-go build -o ..\bin\webconsole_%GOOS%_%GOARCH% ..\pkg\
+
+IF ["%GOOS%"] EQU ["windows"] (
+  SET SUFFIX=".exe"
+)
+
+go build -gcflags=-trimpath=$GOPATH -asmflags=-trimpath=$GOPATH -ldflags "-w -s" -o ..\bin\webconsole_%GOOS%_%GOARCH%%SUFFIX% .\pkg\
+
