@@ -118,7 +118,7 @@ virtual_total_memory 8.50089984
 
 
 ### 主要依赖项目
-- 高性能日志框架 [github.com/gin-contrib/zap](github.com/gin-contrib/zap)
+- 日志框架 [go.uber.org/zap](go.uber.org/zap)
 - 通用web框架 [github.com/gin-gonic/gin](github.com/gin-gonic/gin)
 - 普罗米修斯 [github.com/prometheus](github.com/prometheus)
 - 主机指标采集 [github.com/shirou/gopsutil](github.com/shirou/gopsutil)

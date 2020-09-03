@@ -115,7 +115,7 @@ virtual_total_memory 8.50089984
 
 
 ### Primary Dependencies
-- High performance logging framework [github.com/gin-contrib/zap](github.com/gin-contrib/zap)
+- Logging framework [go.uber.org/zap](go.uber.org/zap)
 - Widely used Web framework [github.com/gin-gonic/gin](github.com/gin-gonic/gin)
 - Prometheus index monitoring and collection framework [github.com/prometheus](github.com/prometheus)
 - Host index collection tool [github.com/shirou/gopsutil](github.com/shirou/gopsutil)
