@@ -91,15 +91,18 @@ func IsSameWildcardOrigin(defWildcardURI string,
  *
  * @param wildcardURI
  * @return
+ * @see com.wl4g.components.common.web.WebUtils2.extractWildcardEndpoint(String)
  */
 func ExtractWildcardEndpoint(wildcardURI string) (string, error) {
 	if wildcardURI == "" {
 		return "", nil
 	}
 
-	wildcardURI = strings.ToLower(strings.TrimSpace(SafeEncodeURL(wildcardURI)))
-	noPrefix := wildcardURI[strings.Index(wildcardURI, URLSeparProto)+len(URLSeparProto) : len(wildcardURI)-1]
-	slashIndex := strings.Index(noPrefix, URLSeparSlash)
+	// @see com.wl4g.components.common.web.WebUtils2.extractWildcardEndpoint(String)
+	// Note: Note: cannot be used here SafeEncodeURL(wildcardURI), because it is inconsistent with Java (he will ignore the * sign, but Java will not)
+	wildcardURI = strings.ToLower(strings.TrimSpace(wildcardURI))
+	noPrefix := wildcardURI[strings.Index(wildcardURI, URLSeparProtoRaw)+len(URLSeparProtoRaw) : len(wildcardURI)-1]
+	slashIndex := strings.Index(noPrefix, URLSeparSlashRaw)
 	serverName := noPrefix
 	if slashIndex > 0 {
 		serverName = noPrefix[0:slashIndex]
@@ -110,8 +113,8 @@ func ExtractWildcardEndpoint(wildcardURI string) (string, error) {
 	// http://*.domain.com:*[allow]
 	// http://*.aa.*.domain.com[noallow]
 	hostname := serverName
-	if strings.Contains(serverName, URLSeparColon) {
-		hostname = serverName[0:strings.Index(serverName, URLSeparColon)]
+	if strings.Contains(serverName, URLSeparColonRaw) {
+		hostname = serverName[0:strings.Index(serverName, URLSeparColonRaw)]
 	}
 
 	if strings.Index(hostname, AllAllow) != strings.LastIndex(hostname, AllAllow) {
@@ -151,22 +154,43 @@ const (
 	// URLSchemeHTTPS URL scheme(HTTPS)
 	URLSchemeHTTPS = "https"
 
+	// URLSchemeHTTPSRaw ...
+	URLSchemeHTTPSRaw = "https"
+
 	// URLSchemeHTTP URL scheme(HTTP)
 	URLSchemeHTTP = "http"
+
+	// URLSchemeHTTPRaw ...
+	URLSchemeHTTPRaw = "http"
 
 	// URLSeparSlash URL separator(/)
 	URLSeparSlash = "%2f"
 
+	// URLSeparSlashRaw ...
+	URLSeparSlashRaw = "/"
+
 	//URLSeparSlash2 URL double separator(//)
 	URLSeparSlash2 = URLSeparSlash + URLSeparSlash
+
+	// URLSeparSlash2Raw ...
+	URLSeparSlash2Raw = URLSeparSlashRaw + URLSeparSlashRaw
 
 	//URLSeparQuest URL separator(?)
 	URLSeparQuest = "%3f"
 
+	// URLSeparQuestRaw ...
+	URLSeparQuestRaw = "?"
+
 	//URLSeparColon URL colon separator(:)
 	URLSeparColon = "%3a"
+
+	// URLSeparColonRaw ...
+	URLSeparColonRaw = ":"
 
 	//URLSeparProto Protocol separators, such as
 	// https://my.domain.com=>https%3A%2F%2Fmy.domain.com
 	URLSeparProto = URLSeparColon + URLSeparSlash + URLSeparSlash
+
+	// URLSeparProtoRaw ...
+	URLSeparProtoRaw = URLSeparColonRaw + URLSeparSlashRaw + URLSeparSlashRaw
 )

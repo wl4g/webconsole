@@ -21,10 +21,10 @@ import (
 )
 
 func TestWebUtilsAll(t *testing.T) {
-	fmt.Println("-------------3333-------------------")
+	fmt.Println("-------------1111-------------------")
 	fmt.Println(ExtractWildcardEndpoint("http://*.aaa.anjiancloud.test/API/v2"))
 
-	fmt.Println("-------------1111-------------------")
+	fmt.Println("-------------2222-------------------")
 	fmt.Println(IsSameWildcardOrigin("http://*.aa.domain.com/api/v2", "http://bb.aa.domain.com/api/v2", true))
 	fmt.Println(IsSameWildcardOrigin("http://*.aa.domain.com/api/v2", "https://bb.aa.domain.com/api/v2", true))
 	fmt.Println(IsSameWildcardOrigin("http://*.aa.domain.com/api/v2/", "http://bb.aa.domain.com/API/v2", true))
