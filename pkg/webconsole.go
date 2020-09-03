@@ -17,8 +17,7 @@ package main
 
 import (
 	"context"
-	"net/http"
-	"strconv"
+	"strings"
 	"time"
 	admin "xcloud-webconsole/pkg/admin"
 	config "xcloud-webconsole/pkg/config"
@@ -70,15 +69,36 @@ func (wc *WebConsole) StartServe(ctx context.Context, conf string) {
 func (wc *WebConsole) startWebServer() *gin.Engine {
 	logging.Main.Info("WebConsole server starting...")
 
+	// Create gin engine.
 	engine := gin.New()
+
+	// Sets gin runtim mode.
 	// gin.SetMode(gin.ReleaseMode)
-	engine.Use(wc.createCorsHandler())
+
+	// Sets gin http cors policy.
+	corsConfig := config.GlobalConfig.Server.Cors
+	corsHolder := utils.GinCorsHolder{
+		AllowOrigins:     strings.Split(corsConfig.AllowOrigins, ","),
+		AllowMethods:     strings.Split(corsConfig.AllowMethods, ","),
+		AllowHeaders:     strings.Split(corsConfig.AllowHeaders, ","),
+		AllowCredentials: corsConfig.AllowCredentials,
+		ExposeHeaders:    strings.Split(corsConfig.ExposeHeaders, ","),
+		MaxAge:           corsConfig.MaxAge,
+	}
+	corsHolder.RegisterCorsProcessor(engine)
+
+	// Sets gin http other configuration.
+	engine.Use(func(c *gin.Context) {
+		c.Set("Content-Type", "application/json")
+	})
+
+	// Sets gin http logger.
 	zapLogger := logging.Main.GetZapLogger()
 	engine.Use(ginzap.Ginzap(zapLogger, time.RFC3339, true))
 	engine.Use(ginzap.RecoveryWithZap(zapLogger, true))
 
-	// Register SSH2 handlers
-	wc.registerSSH2Handlers(engine)
+	// Sets gin http handlers
+	wc.registerHTTPHandlers(engine)
 
 	err := engine.Run(config.GlobalConfig.Server.Listen) // Default listen on 0.0.0.0:8080.
 	if err != nil {
@@ -88,48 +108,13 @@ func (wc *WebConsole) startWebServer() *gin.Engine {
 	return engine
 }
 
-// registerSSH2Handlers ...
-func (wc *WebConsole) registerSSH2Handlers(engine *gin.Engine) {
+// registerHTTPHandlers ...
+func (wc *WebConsole) registerHTTPHandlers(engine *gin.Engine) {
+	// Register SSH2 dispatch handlers
 	engine.GET(ssh2.DefaultSSH2APIWebSocketURI, ssh2.NewWebsocketConnectionFunc)
 	engine.GET(ssh2.DefaultSSH2APISessionQueryURI, ssh2.QuerySSH2SessionsFunc)
 	engine.POST(ssh2.DefaultSSH2APISessionAddURI, ssh2.AddSSH2SessionFunc)
 	engine.POST(ssh2.DefaultSSH2APISessionDeleteURI, ssh2.DeleteSSH2SessionFunc)
 	engine.POST(ssh2.DefaultSSH2APISessionCloseURI, ssh2.CloseSSH2SessionFunc)
-}
 
-// createCorsHandler ...
-func (wc *WebConsole) createCorsHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		method := c.Request.Method
-		origin := c.Request.Header.Get("Origin")
-		// var headerNames []string
-		// for k := range c.Request.Header {
-		// 	headerNames = append(headerNames, k)
-		// }
-		// headerNamesString := strings.Join(headerNames, ", ")
-		// if headerNamesString != "" {
-		// 	headerNamesString = fmt.Sprintf("Access-Control-Allow-Origin, Access-Control-Allow-Headers, %s", headerNamesString)
-		// } else {
-		// 	headerNamesString = "Access-Control-Allow-Origin, Access-Control-Allow-Headers"
-		// }
-
-		if method == "OPTIONS" {
-			c.JSON(http.StatusOK, "Cors OPTIONS Request")
-		}
-
-		// Sets default access control policy for CORS requests
-		if origin != "" {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", config.GlobalConfig.Server.Cors.AllowOrigins)
-			c.Header("Access-Control-Allow-Origin", config.GlobalConfig.Server.Cors.AllowOrigins)
-			c.Header("Access-Control-Allow-Credentials", strconv.FormatBool(config.GlobalConfig.Server.Cors.AllowCredentials))
-			c.Header("Access-Control-Allow-Methods", config.GlobalConfig.Server.Cors.AllowMethods)
-			c.Header("Access-Control-Allow-Headers", config.GlobalConfig.Server.Cors.AllowHeaders)
-			c.Header("Access-Control-Expose-Headers", config.GlobalConfig.Server.Cors.ExposeHeaders) // 跨域关键设置让浏览器可以解析
-			c.Header("Access-Control-Max-Age", strconv.Itoa(config.GlobalConfig.Server.Cors.MaxAge))
-			c.Set("Content-Type", "application/json")
-		}
-
-		// Execute the next handler
-		c.Next()
-	}
 }

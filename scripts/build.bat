@@ -16,8 +16,8 @@ rem limitations under the License.
 rem -------------------------------------------------------------------------
 rem ---   Compiling Mac and Linux executable programs under Windows.      ---
 rem -------------------------------------------------------------------------
+rem Using pushd popd to set BASE_DIR to the absolute path.
 
-rem Using pushd popd to set BASE_DIR to the absolute path
 pushd %~dp0..
 set BASE_DIR=%CD%
 popd
@@ -34,9 +34,7 @@ IF ["%GOOS%"] EQU ["windows"] (
   SET SUFFIX=".exe"
 )
 
-
-go build -v -a -ldflags '-s -w' \
--gcflags="all=-trimpath=%BASE_DIR%" \
--asmflags="all=-trimpath=%BASE_DIR%" \
--o ./bin/webconsole_${GOOS}_${GOARCH}${SUFFIX} ./pkg/
-
+go build -v -a -ldflags "-s -w" ^
+-gcflags="all=-trimpath=%BASE_DIR%" ^
+-asmflags="all=-trimpath=%BASE_DIR%" ^
+-o ./bin/webconsole_%GOOS%_%GOARCH%%SUFFIX% ./pkg/
