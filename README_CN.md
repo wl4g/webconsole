@@ -108,8 +108,15 @@ virtual_total_memory 8.50089984
 - 二次开发建议基于 Golang 1.13+ 构建
 - 本程序只能对 Unix/Linux 类的操作系统的 SSH 协议的 OS 远程操作（Windows RDP支持需参考具体发行版是否有RDP实现）
 
-### 特性及说明
 
+### 运行截图
+- ![rz 上传文件](shots/lrzsz-1.jpg)
+- ![rz 上传文件](shots/lrzsz-2.jpg)
+
+> 说明：界面未设置css样式的最精简测试页面
+
+
+### 特性及说明
 - 它被设计成一个原生JavaScript类库，可以很容易地与React/Vue/AngularJS和其他框架集成
 - 它可以运行在Android/IOS和任何其他可以呈现HTML的终端上。它几乎可以完全取代基于安装程序的shell客户端
 - 完全支持lrzsz命令集（基于zmodem实现）

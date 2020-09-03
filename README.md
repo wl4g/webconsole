@@ -104,9 +104,14 @@ virtual_free_memory 1.731424256
 virtual_total_memory 8.50089984
 ```
 
+### Screenshots
+- ![rz Upload file](shots/lrzsz-1.jpg)
+- ![rz Upload file](shots/lrzsz-2.jpg)
+
+> Note: the page does not set the most compact test page of CSS style
+
 
 ### Features
-
 - It is designed as a native JavaScript class library, which can be easily integrated with React/Vue/AngularJS and other frameworks
 - It can run on Android / IOS and any other terminal that can render HTML. It can almost completely replace the shell client based on the installation program
 - Fully support lrzsz command set (implemented based on zmodem)
@@ -124,7 +129,6 @@ virtual_total_memory 8.50089984
 
 
 ### TODO
-
 - [√] Completely unify the daily output of each component, such as `gin` framework.
 - Enhance the administrator functions of webconsole service, such as its own health/metrics/indicator(CPU/Mem/Network/Connections...) And more detailed indicators.
 - canvas + coss Audit screen recording function.
