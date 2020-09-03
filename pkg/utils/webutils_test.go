@@ -34,5 +34,6 @@ func TestWebUtilsAll(t *testing.T) {
 	fmt.Println(IsSameWildcardOrigin("http://*.aa.domain.com:*", "http://bb.aa.domain.com:8080/api/v2/xx", true))
 	fmt.Println(IsSameWildcardOrigin("http://*.aa.domain.com:8080", "http://bb.aa.domain.com:8443/v2/xx", true))
 	fmt.Println(IsSameWildcardOrigin("http://*.aa.domain.com:*", "http://bb.aa.domain.com:8080/v2/xx", true))
+	fmt.Println(IsSameWildcardOrigin("*://*.aa.domain.com:*", "http://bb.aa.domain.com:8080/v2/xx", true))
 
 }

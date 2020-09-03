@@ -19,7 +19,8 @@
 server:
   listen: :16088
   cors:
-    allow-origins: 'http://localhost:16088,https://webconsole.wl4g.debug'
+    #allow-origins: '*'
+    allow-origins: 'http://localhost:16088,https://*.wl4g.com,https://*.wl4g.debug,http://*.wl4g.com,http://*.wl4g.debug'
 
 ### -------------------------------------
 ### DataSource configuration.

@@ -63,9 +63,7 @@ func (holder *GinCorsHolder) createCorsHandlerFunc() gin.HandlerFunc {
 
 		// Sets default access control policy for CORS requests
 		if origin != "" {
-			matchOrigin := holder.matchCorsOrigin(origin)
-			c.Writer.Header().Set("Access-Control-Allow-Origin", matchOrigin)
-			c.Header("Access-Control-Allow-Origin", matchOrigin)
+			c.Header("Access-Control-Allow-Origin", holder.matchCorsOrigin(origin))
 			c.Header("Access-Control-Allow-Credentials", strconv.FormatBool(holder.AllowCredentials))
 			c.Header("Access-Control-Allow-Methods", holder.matchCorsMethod(method))
 			c.Header("Access-Control-Allow-Headers", holder.matchCorsHeaders(headerNames))

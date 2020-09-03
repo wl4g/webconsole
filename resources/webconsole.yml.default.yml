@@ -19,7 +19,8 @@
 server:
   listen: :16088
   cors:
-    allow-origins: '*'
+    #allow-origins: '*'
+    allow-origins: 'http://localhost:16088,https://*.wl4g.com,https://*.wl4g.debug,http://*.wl4g.com,http://*.wl4g.debug'
     allow-credentials: false
     allow-methods: GET,POST,OPTIONS,PUT,DELETE,UPDATE
     allow-headers: Authorization,Content-Length,X-CSRF-Token,Token,session,X_Requested_With,Accept,Origin,Host,Connection,Accept-Encoding,Accept-Language,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Pragma
