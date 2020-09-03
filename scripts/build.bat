@@ -18,7 +18,7 @@ rem ---   Compiling Mac and Linux executable programs under Windows.      ---
 rem -------------------------------------------------------------------------
 
 rem Using pushd popd to set BASE_DIR to the absolute path
-pushd %~dp0..\..
+pushd %~dp0..
 set BASE_DIR=%CD%
 popd
 
