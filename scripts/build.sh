@@ -28,5 +28,9 @@ if [ "$GOOS" == "windows" ]; then
   SUFFIX=".exe"
 fi
 
-go build -gcflags=-trimpath=${GOPATH} -asmflags=-trimpath=${GOPATH} --ldflags "-s -w" -o ./bin/webconsole_${GOOS}_${GOARCH}${SUFFIX} ./pkg/
+go build -v -a -ldflags '-s -w' \
+-gcflags="all=-trimpath=${BASE_DIR}" \
+-asmflags="all=-trimpath=${BASE_DIR}" \
+-o ./bin/webconsole_${GOOS}_${GOARCH}${SUFFIX} ./pkg/
+
 
