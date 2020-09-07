@@ -17,7 +17,6 @@ package utils
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"testing"
 )
@@ -43,34 +42,19 @@ type TestCustomerBean struct {
 }
 
 // Reflect sets fields
-func TestConfiguratorSample1(t *testing.T) {
+func TestConfigurerSample1(t *testing.T) {
 	os.Setenv("MYPREFIX_NAME", "Company333")
 	os.Setenv("MYPREFIX_TYPE", "3")
 
 	// Create config all sample tmpfile.
-	defineFullConfigFile := createSampleTmpFile("config.all.yaml",
-		`Name: Company1
-Type: 1
-Users:
-  - Name: jack
-    Age: 50
-    Roles:
-      - Name:  administrator
-        Alias: admin
-`)
+	defineFullConfigFile := createSampleTmpFile("config.all.yaml", testDefineFullConfigContent)
 
 	// Create use config sample tmpfile.
-	configFile := createSampleTmpFile("config.yaml",
-		`Name: Company222
-Type: 2
-Users:
-  - Name: jack
-    Roles:
-      - Name:  administrator
-`)
+	configFile := createSampleTmpFile("config.yaml", testConfigContent)
 
 	// Create configurator
-	c := NewConfigurator(defineFullConfigFile, configFile)
+	c := NewViperConfigurer()
+	c.SetConfigFile(defineFullConfigFile, configFile)
 	c.SetEnvPrefix("MYPREFIX") // Sets auto use env variables prefix
 
 	// Load & parse
@@ -85,16 +69,56 @@ Users:
 	} else {
 		fmt.Println("Final load configuration: " + json)
 	}
+}
 
+// Reflect sets fields
+func TestConfigurerSample2(t *testing.T) {
+	os.Setenv("MYPREFIX_NAME", "Company333")
+	os.Setenv("MYPREFIX_TYPE", "3")
+
+	// Create use config sample tmpfile.
+	configFile := createSampleTmpFile("config.yaml", testConfigContent)
+
+	// Create configurator
+	c := NewViperConfigurer()
+	c.SetConfig(testDefineFullConfigContent, configFile)
+	c.SetEnvPrefix("MYPREFIX") // Sets auto use env variables prefix
+
+	// Load & parse
+	customer := &TestCustomerBean{}
+	if err := c.Parse(customer); err != nil {
+		panic(err)
+	}
+
+	// Gets parsed configuration
+	if json, err := ToJSONString(customer); err != nil {
+		panic(err)
+	} else {
+		fmt.Println("Final load configuration: " + json)
+	}
 }
 
 func createSampleTmpFile(filename string, content string) string {
 	filename = "/tmp/" + filename
-	f, _ := os.Create(filename)
-	defer f.Close()
-	err := ioutil.WriteFile(filename, []byte(content), os.ModeTemporary)
-	if err != nil {
-		panic(err)
-	}
+	CreateWriteTmpFile(filename, content)
 	return filename
 }
+
+const (
+	testDefineFullConfigContent = `Name: Company1
+Type: 1
+Users:
+  - Name: jack
+    Age: 50
+    Roles:
+      - Name:  administrator
+        Alias: admin
+`
+	testConfigContent = `Name: Company222
+Type: 2
+Users:
+  - Name: jack
+    Roles:
+      - Name:  administrator
+`
+)

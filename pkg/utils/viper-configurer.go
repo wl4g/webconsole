@@ -17,6 +17,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"reflect"
 	"strings"
@@ -27,25 +28,36 @@ import (
 // FieldProcessor ...
 type FieldProcessor func(fieldInfo reflect.StructField)
 
-// Configurator ...
-type Configurator struct {
+// ViperConfigurer ...
+type ViperConfigurer struct {
 	vp *viper.Viper
 }
 
-// NewConfigurator ...
-func NewConfigurator(defineFullConfigFile string, configFile string) *Configurator {
-	if defineFullConfigFile == "" || configFile == "" {
-		panic(errors.New("DefineFullCofnigFile and configFile must not is empty"))
-	}
-
+// NewViperConfigurer ...
+func NewViperConfigurer() *ViperConfigurer {
 	vp := viper.New()
 	vp.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	vp.AllowEmptyEnv(false)
-	vp.SetConfigFile(defineFullConfigFile)
 
 	// Enable auto population from environment variables (Priority: Set()/Flags/Config/Env/Default)
 	// @see https://github.com/spf13/viper#working-with-environment-variables
 	vp.AutomaticEnv()
+
+	return &ViperConfigurer{vp: vp}
+}
+
+// SetConfigFile Sets config files @see: #SetConfig()
+func (c *ViperConfigurer) SetConfigFile(defineFullConfigFile string, configFile string) error {
+	// Check config files
+	if defineFullConfigFile == "" || configFile == "" {
+		return errors.New("DefineFullCofnigFile or configFile must not is empty")
+	}
+	if !(ExistsFileOrDir(defineFullConfigFile) && ExistsFileOrDir(configFile)) {
+		errmsg := fmt.Sprintf("No such defineFullCofnigFile(%s) or configFile(%s)", defineFullConfigFile, configFile)
+		return errors.New(errmsg)
+	}
+
+	c.vp.SetConfigFile(defineFullConfigFile)
 
 	// Note: some strange logic problems are found in the test. After automaticenv() is enabled,
 	// the parsing is based on the key defined in the configuration file??? For example: environment
@@ -55,23 +67,33 @@ func NewConfigurator(defineFullConfigFile string, configFile string) *Configurat
 	// be able to get the correct value of uri111 https://github.com/spf13/viper/blob/master/viper.go#L1904
 
 	// Load parse the real runtime configuration file
-	cf, err := os.Open(configFile)
-	if err != nil {
-		panic(err)
+	if cf, err := os.Open(configFile); err != nil {
+		return err
+	} else {
+		c.vp.MergeConfig(cf)
+		cf.Close()
 	}
-	vp.MergeConfig(cf)
-	cf.Close()
 
-	return &Configurator{vp: vp}
+	return nil
+}
+
+// SetConfig Sets config @see: #SetConfigFile()
+func (c *ViperConfigurer) SetConfig(defineFullConfigContent string, configFile string) error {
+	tmpFullConfigName := "defineFullConfig.yaml"
+	filename, err2 := CreateWriteTmpFile(tmpFullConfigName, defineFullConfigContent)
+	if err2 != nil {
+		return err2
+	}
+	return c.SetConfigFile(filename, configFile)
 }
 
 // SetEnvPrefix ...
-func (c *Configurator) SetEnvPrefix(envPrefix string) {
+func (c *ViperConfigurer) SetEnvPrefix(envPrefix string) {
 	c.vp.SetEnvPrefix(envPrefix)
 }
 
 // Parse ...
-func (c *Configurator) Parse(config interface{}) error {
+func (c *ViperConfigurer) Parse(config interface{}) error {
 	if err := c.vp.ReadInConfig(); err != nil {
 		return err
 	}
@@ -82,6 +104,6 @@ func (c *Configurator) Parse(config interface{}) error {
 }
 
 // GetViper ...
-func (c *Configurator) GetViper() *viper.Viper {
+func (c *ViperConfigurer) GetViper() *viper.Viper {
 	return c.vp
 }

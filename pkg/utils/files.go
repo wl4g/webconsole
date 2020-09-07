@@ -16,6 +16,7 @@
 package utils
 
 import (
+	"io/ioutil"
 	"os"
 )
 
@@ -29,4 +30,23 @@ func ExistsFileOrDir(path string) bool {
 		return false
 	}
 	return true
+}
+
+// CreateWriteTmpFile Create tmpfile and write content.
+func CreateWriteTmpFile(filename string, content string) (string, error) {
+	filename = "/tmp/" + filename
+	f, err1 := os.Create(filename)
+	if err1 != nil {
+		return "", err1
+	}
+	defer f.Close()
+
+	if content != "" {
+		err2 := ioutil.WriteFile(filename, []byte(content), os.ModeTemporary)
+		if err2 != nil {
+			return "", err2
+		}
+	}
+
+	return filename, nil
 }

@@ -13,7 +13,6 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.7.1
 	github.com/shirou/gopsutil v2.20.8+incompatible
-	github.com/spf13/cast v1.3.0
 	github.com/spf13/viper v1.7.1
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
