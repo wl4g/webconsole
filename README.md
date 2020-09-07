@@ -137,3 +137,13 @@ virtual_total_memory 8.50089984
 - [√] Enhance the administrator functions of webconsole service, such as its own health/metrics/indicator(CPU/Mem/Network/Connections...) And more detailed indicators.
 - canvas + coss Audit screen recording function.
 - In order to realize the remote image UI control protocol compatible with windows RDP(Remote Desktop Protocol) based on Web, And RFB/Telnet
+
+### Custom Development Guide
+- It is recommended that ide use vscode for secondary development, because the project root directory already contains the .vscode editor configuration file
+- Modifying database configuration: resources/webconsole.yml#datasource.mysql.dbconnectstr
+- Configuration file description: this project uses Viper configuration framework, and the loading priority is: Set()/Flags/Env/Config/Default
+- If you need to add new configuration items, you must use config_ generator.go Tool generation and xxx-config.go Corresponding default configuration items to webconsole.default.yml.go, reference command:
+```
+cd $WEBCONSOLE_HOME
+go run config_generator.go
+```

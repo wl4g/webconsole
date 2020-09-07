@@ -17,11 +17,8 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 
 	utils "xcloud-webconsole/pkg/utils"
-
-	"gopkg.in/yaml.v2"
 )
 
 // GlobalProperties ...
@@ -51,17 +48,26 @@ func InitGlobalConfig(path string) {
 	// Create default config.
 	globalConfig := createDefaultProperties()
 
-	conf, err := ioutil.ReadFile(path)
-	if err != nil {
-		fmt.Printf("Read config '%s' error! %s", path, err)
+	c := utils.NewViperConfigurer()
+	c.SetConfig(defaultWebConsoleYamlConfigContent, path)
+	c.SetEnvPrefix("WEBCONSOLE") // Sets auto use env variables prefix
+
+	// Load & parse
+	if err := c.Parse(globalConfig); err != nil {
 		panic(err)
 	}
 
-	err = yaml.Unmarshal(conf, globalConfig)
-	if err != nil {
-		fmt.Printf("Unmarshal config '%s' error! %s", path, err)
-		panic(err)
-	}
+	// conf, err := ioutil.ReadFile(path)
+	// if err != nil {
+	// 	fmt.Printf("Read config '%s' error! %s", path, err)
+	// 	panic(err)
+	// }
+
+	// err = yaml.Unmarshal(conf, globalConfig)
+	// if err != nil {
+	// 	fmt.Printf("Unmarshal config '%s' error! %s", path, err)
+	// 	panic(err)
+	// }
 
 	// Post properties.
 	afterPropertiesSet(globalConfig)
@@ -72,62 +78,7 @@ func InitGlobalConfig(path string) {
 
 // Create default configuration properties.
 func createDefaultProperties() *GlobalProperties {
-	return &GlobalProperties{
-		Admin: AdminProperties{
-			Listen: DefaultAdminServeListen,
-		},
-		Server: ServerProperties{
-			Listen: DefaultServeListen,
-			Cors: CorsProperties{
-				AllowOrigins:     DefaultCorsAllowOrigins,
-				AllowCredentials: DefaultCorsAllowCredentials,
-				AllowMethods:     DefaultCorsAllowMethods,
-				AllowHeaders:     DefaultCorsAllowHeaders,
-				ExposeHeaders:    DefaultCorsExposeHeaders,
-				MaxAge:           DefaultCorsMaxAge,
-			},
-			SSH2Term: SSH2TermProperties{
-				PtyTermType:             DefaultPtyTermType,
-				PtyTermConnTimeoutSec:   DefaultPtyTermConnTimeoutSec,
-				PtyWSTransferBufferSize: DefaultPtyWSTransferBufferSize,
-			},
-		},
-		DataSource: DataSourceProperties{
-			Mysql: MysqlProperties{
-				DbConnectStr:       DefaultMysqlConnectStr,
-				MaxOpenConns:       DefaultMysqlMaxOpenConns,
-				MaxIdleConns:       DefaultMysqlMaxIdleConns,
-				ConnMaxLifetimeSec: DefaultMysqlConnMaxLifetimeSec,
-			},
-			Csv: CsvProperties{
-				DataDir: DefaultCsvDataDir,
-			},
-		},
-		Logging: LoggingProperties{
-			DateFormatPattern: DefaultLogDateFormatPattern,
-			LogItems: map[string]LogItemProperties{
-				DefaultLogMain: {
-					FileName: DefaultLogDir + DefaultLogMain + ".log",
-					Level:    DefaultLogLevel,
-					Policy: PolicyProperties{
-						RetentionDays: DefaultLogRetentionDays,
-						MaxBackups:    DefaultLogMaxBackups,
-						MaxSize:       DefaultLogMaxSize,
-					},
-				},
-				DefaultLogReceive: {
-					FileName: DefaultLogDir + DefaultLogReceive + ".log",
-					Level:    DefaultLogLevel,
-					Policy: PolicyProperties{
-						RetentionDays: DefaultLogRetentionDays,
-						MaxBackups:    DefaultLogMaxBackups,
-						MaxSize:       DefaultLogMaxSize,
-					},
-				},
-			},
-		},
-	}
-
+	return &GlobalProperties{}
 }
 
 // MetricExclude settings after initialization

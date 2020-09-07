@@ -137,8 +137,17 @@ virtual_total_memory 8.50089984
 
 
 ### 待办清单
-
 - [√] 完全统一每个组件的日常输出，如“gin”框架。
 - [√] 增强webconsole服务的管理员功能，例如自身的health/metrics/indicator（CPU/Mem/Network/Connections…）和更详细的指示器
 - canvas + coss 审计录屏功能
 - 为了实现与windows RDP（远程桌面协议）兼容的基于Web的远程图像UI控制协议, 以及RFB/Telnet等
+
+### 自定义开发指南
+- 推荐IDE使用 VSCode 进行二次开发，因为项目根目录已包含 .vscode 编辑器配置文件
+- 修改数据库配置: resources/webconsole.yml#datasource.mysql.dbconnectstr
+- 配置文件说明：本项目使用viper配置框架，加载优先级依次为：Set()/Flags/Env/Config/Default
+- 如果需要添加新的配置项，则必须使用config_generator.go 生成和xxx-config.go 对应的默认配置项webconsole.default.yml.go，参考命令：
+```
+cd $WEBCONSOLE_HOME
+go run config_generator.go
+```

@@ -40,25 +40,6 @@ type CsvProperties struct {
 }
 
 const (
-	// -------------------------------
-	// Repository(datasource) DAO constants.
-	// -------------------------------
-
-	// DefaultMysqlConnectStr ...
-	DefaultMysqlConnectStr = "root:root@tcp(127.0.0.1:3306)/webconsole"
-
-	// DefaultMysqlMaxOpenConns ...
-	DefaultMysqlMaxOpenConns = 80
-
-	// DefaultMysqlMaxIdleConns ...
-	DefaultMysqlMaxIdleConns = 10
-
-	// DefaultMysqlConnMaxLifetimeSec ...
-	DefaultMysqlConnMaxLifetimeSec = uint32(90)
-
-	// DefaultCsvDataDir ...
-	DefaultCsvDataDir = "/mnt/disk1/webconsole/"
-
 	// DefaultCsvDataFile ...
 	DefaultCsvDataFile = "webconsole.db.csv"
 )

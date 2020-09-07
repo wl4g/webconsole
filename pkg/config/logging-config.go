@@ -49,22 +49,4 @@ const (
 
 	// DefaultLogReceive Default log service 'receive'.
 	DefaultLogReceive = "receive"
-
-	// DefaultLogDir Default log directory.
-	DefaultLogDir = "/mnt/disk1/log/webconsole/"
-
-	// DefaultLogDateFormatPattern Default log date format pattern
-	DefaultLogDateFormatPattern = "06-01-02 15:04:05"
-
-	// DefaultLogLevel Default log level
-	DefaultLogLevel = "INFO"
-
-	// DefaultLogRetentionDays Default log retention days.
-	DefaultLogRetentionDays = 30
-
-	// DefaultLogMaxBackups Default log max backup numbers.
-	DefaultLogMaxBackups = 30
-
-	// DefaultLogMaxSize Default log max size(MB).
-	DefaultLogMaxSize = 512
 )

@@ -23,12 +23,3 @@ package config
 type AdminProperties struct {
 	Listen string `yaml:"listen"`
 }
-
-const (
-	// -------------------------------
-	// WebConsole admin constants.
-	// -------------------------------
-
-	// DefaultAdminServeListen ...
-	DefaultAdminServeListen = ":16089"
-)
