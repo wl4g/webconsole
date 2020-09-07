@@ -77,7 +77,7 @@ func (wc *WebConsole) startWebServer() *gin.Engine {
 
 	// Sets gin http cors policy.
 	corsConfig := config.GlobalConfig.Server.Cors
-	corsHolder := utils.GinCorsHolder{
+	corsHolder := utils.CorsHolder{
 		AllowOrigins:     strings.Split(corsConfig.AllowOrigins, ","),
 		AllowMethods:     strings.Split(corsConfig.AllowMethods, ","),
 		AllowHeaders:     strings.Split(corsConfig.AllowHeaders, ","),

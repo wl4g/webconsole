@@ -20,12 +20,13 @@ import (
 	"os"
 )
 
-// Read file to string.
-func ReadFileToString(filePth string) string {
+// ReadFileToString Read file to string.
+func ReadFileToString(filePth string) (string, error) {
 	f, err := os.Open(filePth)
+	defer f.Close()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	s, _ := ioutil.ReadAll(f)
-	return string(s)
+	return string(s), nil
 }

@@ -16,6 +16,7 @@
 package utils
 
 import (
+	"container/list"
 	"net/http"
 	"strconv"
 	"strings"
@@ -23,9 +24,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GinCorsHolder CORS enhanced processor based on gin framework,
+// CorsHolder CORS enhanced processor based on gin framework,
 // such as: support for https://*.console.example.com Wildcard configuration.
-type GinCorsHolder struct {
+type CorsHolder struct {
 	AllowOrigins     []string `yaml:"allow-origins"`
 	AllowCredentials bool     `yaml:"allow-credentials"`
 	AllowMethods     []string `yaml:"allow-methods"`
@@ -35,12 +36,12 @@ type GinCorsHolder struct {
 }
 
 // RegisterCorsProcessor ...
-func (holder *GinCorsHolder) RegisterCorsProcessor(engine *gin.Engine) {
+func (holder *CorsHolder) RegisterCorsProcessor(engine *gin.Engine) {
 	engine.Use(holder.createCorsHandlerFunc())
 }
 
 // createCorsHandlerFunc ...
-func (holder *GinCorsHolder) createCorsHandlerFunc() gin.HandlerFunc {
+func (holder *CorsHolder) createCorsHandlerFunc() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method
 		origin := c.Request.Header.Get("Origin")
@@ -48,13 +49,6 @@ func (holder *GinCorsHolder) createCorsHandlerFunc() gin.HandlerFunc {
 		for k := range c.Request.Header {
 			headerNames = append(headerNames, k)
 		}
-
-		// headerNamesString := strings.Join(headerNames, ", ")
-		// if headerNamesString != "" {
-		// 	headerNamesString = fmt.Sprintf("Access-Control-Allow-Origin, Access-Control-Allow-Headers, %s", headerNamesString)
-		// } else {
-		// 	headerNamesString = "Access-Control-Allow-Origin, Access-Control-Allow-Headers"
-		// }
 
 		// Unconditional pass
 		if method == "OPTIONS" {
@@ -77,7 +71,7 @@ func (holder *GinCorsHolder) createCorsHandlerFunc() gin.HandlerFunc {
 }
 
 // matchCorsOrigin ...
-func (holder *GinCorsHolder) matchCorsOrigin(requestOrigin string) string {
+func (holder *CorsHolder) matchCorsOrigin(requestOrigin string) string {
 	if requestOrigin == "" {
 		return ""
 	}
@@ -114,48 +108,43 @@ func (holder *GinCorsHolder) matchCorsOrigin(requestOrigin string) string {
 }
 
 // matchCorsHeaders ...
-func (holder *GinCorsHolder) matchCorsHeaders(requestHeaders []string) string {
-	// if (isNull(requestHeaders)) {
-	// 	return null;
-	// }
-	// if (requestHeaders.isEmpty()) {
-	// 	return Collections.emptyList();
-	// }
-	// if (ObjectUtils.isEmpty(allowedHeaders)) {
-	// 	return null;
-	// }
+func (holder *CorsHolder) matchCorsHeaders(requestHeaders []string) string {
+	if requestHeaders == nil || len(requestHeaders) <= 0 {
+		return ""
+	}
+	if holder.AllowHeaders == nil || len(holder.AllowHeaders) <= 0 {
+		return ""
+	}
 
-	// boolean allowAnyHeader = allowedHeaders.contains(ALL);
-	// List<String> result = new ArrayList<String>(requestHeaders.size());
-	// for (String requestHeader : requestHeaders) {
-	// 	if (StringUtils.hasText(requestHeader)) {
-	// 		requestHeader = requestHeader.trim();
-	// 		if (allowAnyHeader) {
-	// 			result.add(requestHeader);
-	// 		} else {
-	// 			for (String allowedHeader : allowedHeaders) {
-	// 				// e.g: allowedHeader => "X-Iam-*"
-	// 				if (allowedHeader.contains(ALL)) {
-	// 					String allowedHeaderPrefix = allowedHeader.substring(allowedHeader.indexOf(ALL) + 1);
-	// 					if (startsWithIgnoreCase(requestHeader, allowedHeaderPrefix)) {
-	// 						result.add(requestHeader);
-	// 						break;
-	// 					}
-	// 				} else if (requestHeader.equalsIgnoreCase(allowedHeader)) {
-	// 					result.add(requestHeader);
-	// 					break;
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
-	// return (result.isEmpty() ? null : result);
-
-	return JoinAll(requestHeaders, ",")
+	allowAnyHeader := StringsContains(holder.AllowHeaders, AllAllow)
+	result := list.New()
+	for _, requestHeader := range requestHeaders {
+		if requestHeader != "" {
+			requestHeader = strings.TrimSpace(requestHeader)
+			if allowAnyHeader {
+				result.PushBack(requestHeader)
+			} else {
+				for _, allowedHeader := range holder.AllowHeaders {
+					// e.g: allowedHeader => "X-Iam-*"
+					if strings.Contains(allowedHeader, AllAllow) {
+						allowedHeaderPrefix := allowedHeader[strings.Index(allowedHeader, AllAllow)+1 : len(allowedHeader)-1]
+						if strings.EqualFold(requestHeader, allowedHeaderPrefix) {
+							result.PushBack(requestHeader)
+							break
+						}
+					} else if strings.EqualFold(requestHeader, allowedHeader) {
+						result.PushBack(requestHeader)
+						break
+					}
+				}
+			}
+		}
+	}
+	return JoinAll(ListToStringArray(result), ",")
 }
 
 // matchCorsMethod ...
-func (holder *GinCorsHolder) matchCorsMethod(requestMethod string) string {
+func (holder *CorsHolder) matchCorsMethod(requestMethod string) string {
 	if requestMethod == "" {
 		return ""
 	}

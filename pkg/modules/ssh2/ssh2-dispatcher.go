@@ -471,7 +471,7 @@ func (dispatcher *WebSSH2Dispatcher) createSSH2Session(conn net.Conn, config *ss
 		ssh.IEXTEN:        0,
 	}
 	if msg.Cols <= 0 || msg.Cols > 500 {
-		msg.Cols = 40
+		msg.Cols = 157
 	}
 	if msg.Rows <= 0 || msg.Rows > 1000 {
 		msg.Rows = 80

@@ -214,7 +214,7 @@ func TestCopyProperties2(t *testing.T) {
 
 	fmt.Println("before.src:", string(srcData))
 
-	CopyObject(srcData, dst)
+	ParseJSONObject(srcData, dst)
 	dstData, _ = jsoniter.Marshal(dst)
 	fmt.Println("after.dst:", string(dstData))
 }

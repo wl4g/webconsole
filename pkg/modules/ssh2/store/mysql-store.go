@@ -38,7 +38,11 @@ type MysqlStore struct {
 // NewMysqlStore ...
 func NewMysqlStore() (*MysqlStore, error) {
 	mysqlConfig := config.GlobalConfig.DataSource.Mysql
-	logging.Receive.Info("Connecting to MySQL of configuration: %s", zap.String("mysqlConfig", utils.ToJSONString(mysqlConfig)))
+	logging.Receive.Info("Connecting to MySQL of configuration: %s",
+		zap.String("dbconnectstr", getDesensitizeWithMysqlConnectStr()),
+		zap.Uint32("connMaxLifetimeSec", mysqlConfig.ConnMaxLifetimeSec),
+		zap.Int("maxOpenConns", mysqlConfig.MaxOpenConns),
+		zap.Int("maxIdleConns", mysqlConfig.MaxIdleConns))
 
 	mydb, err := utils.OpenMysqlConnection(
 		mysqlConfig.DbConnectStr,
@@ -115,13 +119,17 @@ func (that MysqlStore) Close() error {
 
 // Stat ...
 func (that *MysqlStore) Stat() *Stat {
+	return &Stat{
+		DbConnectStr: getDesensitizeWithMysqlConnectStr(),
+		ActiveConns:  that.mysqlDB.Stats().OpenConnections,
+	}
+}
+
+func getDesensitizeWithMysqlConnectStr() string {
 	connStr := config.GlobalConfig.DataSource.Mysql.DbConnectStr
 	// Security key(password) desensitization
 	colonIdx := strings.Index(connStr, ":")
 	atIdx := strings.Index(connStr, "@tcp")
 	connStr = connStr[0:colonIdx+1] + "******" + connStr[atIdx:len(connStr)]
-	return &Stat{
-		DbConnectStr: connStr,
-		ActiveConns:  that.mysqlDB.Stats().OpenConnections,
-	}
+	return connStr
 }

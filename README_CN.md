@@ -116,7 +116,7 @@ virtual_total_memory 8.50089984
 > 说明：界面未设置css样式的最精简测试页面
 
 
-### 特性及说明
+### 特性
 - 它被设计成一个原生JavaScript类库，可以很容易地与React/Vue/AngularJS和其他框架集成
 - 它可以运行在Android/IOS和任何其他可以呈现HTML的终端上。它几乎可以完全取代基于安装程序的shell客户端
 - 完全支持lrzsz命令集（基于zmodem实现）
@@ -132,10 +132,13 @@ virtual_total_memory 8.50089984
 - JSON序列化 [github.com/json-iterator/go](github.com/json-iterator/go)
 - Websocket处理 [github.com/gorilla/websocket](github.com/gorilla/websocket)
 
+### 其他说明（如果需要）
+- [生成临时调试https SSL证书](https://github.com/wl4g-collect/mkcert)
+
 
 ### 待办清单
 
 - [√] 完全统一每个组件的日常输出，如“gin”框架。
-- 增强webconsole服务的管理员功能，例如自身的health/metrics/indicator（CPU/Mem/Network/Connections…）和更详细的指示器
+- [√] 增强webconsole服务的管理员功能，例如自身的health/metrics/indicator（CPU/Mem/Network/Connections…）和更详细的指示器
 - canvas + coss 审计录屏功能
 - 为了实现与windows RDP（远程桌面协议）兼容的基于Web的远程图像UI控制协议, 以及RFB/Telnet等

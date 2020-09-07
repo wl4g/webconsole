@@ -128,8 +128,12 @@ virtual_total_memory 8.50089984
 - Websocket framework [github.com/gorilla/websocket](github.com/gorilla/websocket)
 
 
+### Other descriptions (Optional)
+- [Generate temporary debug HTTPS SSL certificate](https://github.com/wl4g-collect/mkcert)
+
+
 ### TODO
 - [√] Completely unify the daily output of each component, such as `gin` framework.
-- Enhance the administrator functions of webconsole service, such as its own health/metrics/indicator(CPU/Mem/Network/Connections...) And more detailed indicators.
+- [√] Enhance the administrator functions of webconsole service, such as its own health/metrics/indicator(CPU/Mem/Network/Connections...) And more detailed indicators.
 - canvas + coss Audit screen recording function.
 - In order to realize the remote image UI control protocol compatible with windows RDP(Remote Desktop Protocol) based on Web, And RFB/Telnet

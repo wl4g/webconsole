@@ -16,21 +16,20 @@
 package utils
 
 import (
-	"fmt"
-
 	jsoniter "github.com/json-iterator/go"
 )
 
-// To JSON string.
-func ToJSONString(v interface{}) string {
-	s, err := jsoniter.MarshalToString(v)
+// ToJSONString ...
+func ToJSONString(v interface{}) (string, error) {
+	str, err := jsoniter.MarshalToString(v)
 	if err != nil {
-		fmt.Printf("Marshal data error! %s", err)
+		// fmt.Printf("Marshal data error! %s", err)
+		return "", err
 	}
-	return s
+	return str, nil
 }
 
-// Deep objects copy.
+// DeepCopy Deep objects copy.
 func DeepCopy(value interface{}) interface{} {
 	if valueMap, ok := value.(map[string]interface{}); ok {
 		newMap := make(map[string]interface{})
@@ -43,33 +42,21 @@ func DeepCopy(value interface{}) interface{} {
 		for k, v := range valueSlice {
 			newSlice[k] = DeepCopy(v)
 		}
-
 		return newSlice
 	}
 	return value
 }
 
-// Copy src to dst properties.
-func CopyProperties(src interface{}, dst interface{}) {
+// CopyProperties Copy src to dst properties.
+func CopyProperties(src interface{}, dst interface{}) error {
 	srcData, err := jsoniter.Marshal(src)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	jsoniter.Unmarshal(srcData, dst)
-
-	//dstData, err := jsoniter.Marshal(dst)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//fmt.Println("overlay:", string(dstData))
+	return jsoniter.Unmarshal(srcData, dst)
 }
 
-// Copy src properties to object.
-func CopyObject(srcData []byte, dst interface{}) {
-	jsoniter.Unmarshal(srcData, dst)
-	//var dstData, err = jsoniter.Marshal(dst)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//fmt.Println("overlay:", string(dstData))
+// ParseJSONObject Copy src properties to object.
+func ParseJSONObject(srcData []byte, dst interface{}) error {
+	return jsoniter.Unmarshal(srcData, dst)
 }

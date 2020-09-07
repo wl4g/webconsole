@@ -1,0 +1,36 @@
+.expand-keyboard-container {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    background-color: #141416;
+    margin: auto;
+    z-index: 9999;
+    bottom: 1px;
+    /* transition: all .25s ease-in-out 0s; */
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.expand-keyboard-container button:active {
+    /* background-image: linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)); */
+    background: #363633;
+}
+
+.expand-keyboard-container button {
+    text-align: center;
+    width: 4.1em;
+    height: 25px;
+    color: #e3ffe2;
+    border: none;
+    background: #52524b;
+    border-radius: 6px;
+    box-shadow: #000 1px 1px 2px;
+    margin: auto;
+    cursor: pointer;
+}
+
+.ctrl-active {
+    background: #69d4fbcf !important;
+}
