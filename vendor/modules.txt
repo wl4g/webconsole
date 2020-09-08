@@ -1,4 +1,5 @@
 # github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
+## explicit
 github.com/StackExchange/wmi
 # github.com/beorn7/perks v1.0.1
 github.com/beorn7/perks/quantile
@@ -9,14 +10,17 @@ github.com/fsnotify/fsnotify
 # github.com/gin-contrib/sse v0.1.0
 github.com/gin-contrib/sse
 # github.com/gin-contrib/zap v0.0.1
+## explicit
 github.com/gin-contrib/zap
 # github.com/gin-gonic/gin v1.6.3
+## explicit
 github.com/gin-gonic/gin
 github.com/gin-gonic/gin/binding
 github.com/gin-gonic/gin/internal/bytesconv
 github.com/gin-gonic/gin/internal/json
 github.com/gin-gonic/gin/render
 # github.com/go-ole/go-ole v1.2.4
+## explicit
 github.com/go-ole/go-ole
 github.com/go-ole/go-ole/oleutil
 # github.com/go-playground/locales v0.13.0
@@ -27,6 +31,7 @@ github.com/go-playground/universal-translator
 # github.com/go-playground/validator/v10 v10.2.0
 github.com/go-playground/validator/v10
 # github.com/go-sql-driver/mysql v1.5.0
+## explicit
 github.com/go-sql-driver/mysql
 # github.com/golang/protobuf v1.4.2
 github.com/golang/protobuf/proto
@@ -35,6 +40,7 @@ github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
 # github.com/gorilla/websocket v1.4.2
+## explicit
 github.com/gorilla/websocket
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
@@ -48,6 +54,7 @@ github.com/hashicorp/hcl/json/parser
 github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
 # github.com/json-iterator/go v1.1.10
+## explicit
 github.com/json-iterator/go
 # github.com/leodido/go-urn v1.2.0
 github.com/leodido/go-urn
@@ -66,8 +73,10 @@ github.com/modern-go/reflect2
 # github.com/pelletier/go-toml v1.2.0
 github.com/pelletier/go-toml
 # github.com/pkg/errors v0.9.1
+## explicit
 github.com/pkg/errors
 # github.com/prometheus/client_golang v1.7.1
+## explicit
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/internal
 github.com/prometheus/client_golang/prometheus/promhttp
@@ -82,6 +91,7 @@ github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
 # github.com/shirou/gopsutil v2.20.8+incompatible
+## explicit
 github.com/shirou/gopsutil/internal/common
 github.com/shirou/gopsutil/mem
 # github.com/spf13/afero v1.1.2
@@ -94,6 +104,7 @@ github.com/spf13/jwalterweatherman
 # github.com/spf13/pflag v1.0.3
 github.com/spf13/pflag
 # github.com/spf13/viper v1.7.1
+## explicit
 github.com/spf13/viper
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
@@ -104,6 +115,7 @@ go.uber.org/atomic
 # go.uber.org/multierr v1.5.0
 go.uber.org/multierr
 # go.uber.org/zap v1.15.0
+## explicit
 go.uber.org/zap
 go.uber.org/zap/buffer
 go.uber.org/zap/internal/bufferpool
@@ -111,6 +123,7 @@ go.uber.org/zap/internal/color
 go.uber.org/zap/internal/exit
 go.uber.org/zap/zapcore
 # golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
+## explicit
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/chacha20
 golang.org/x/crypto/curve25519
@@ -162,6 +175,8 @@ google.golang.org/protobuf/types/known/timestamppb
 # gopkg.in/ini.v1 v1.51.0
 gopkg.in/ini.v1
 # gopkg.in/natefinch/lumberjack.v2 v2.0.0
+## explicit
 gopkg.in/natefinch/lumberjack.v2
 # gopkg.in/yaml.v2 v2.3.0
+## explicit
 gopkg.in/yaml.v2

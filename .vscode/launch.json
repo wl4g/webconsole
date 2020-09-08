@@ -11,7 +11,9 @@
             "mode": "auto",
             "program": "${fileDirname}",
             "env": {
-                "GIN_MODE": "debug" // debug|test|release
+                "GIN_MODE": "debug", // debug|test|release
+                // @see: webconsole.yml => datasource.mysql.dbconnectstr
+                "WEBCONSOLE_DATASOURCE_MYSQL_DBCONNECTSTR": "gzsm:gzsm@%#jh?@tcp(10.0.0.160:3306)/devops_dev?charset=utf8",
             },
             "args": [
                 "-c",
