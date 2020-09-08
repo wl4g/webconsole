@@ -1,5 +1,5 @@
 # XCloud WebConsole
-A lightweight enterprise Web Console terminal, which brings together the advantages of most similar products, supporting SSH2/(RDP/RFB/Telnet) protocol, Audit and screen recording function, etc
+A lightweight enterprise Web Console terminal, which brings together the advantages of most similar products, supporting SSH2/lrzsz (RDP/RFB/Telnet) protocol, Audit and screen recording function, etc
 
 [中文文档](README_CN.md).
 
@@ -80,6 +80,14 @@ Management Certificate -> Trusted certification authority -> Imports </br>
 Then restart chrome and try to access: https://webconsole.wl4g.debug
 
 
+### Features
+- It is designed as a native JavaScript class library, which can be easily integrated with React/Vue/AngularJS and other frameworks
+- It can run on `Android iOS` and any other terminal that can render HTML. It can almost completely replace the shell client based on the installation program
+- Fully support `lrzsz` command set (implemented based on zmodem)
+- Enhanced support for mobile terminal copy, paste, fast forward, backward and other key combination command, user-friendly operation habits
+- Seamless docking Prometheus metric acquisition
+
+
 ### Collect prometheus metrics
 ```
 curl http://localhost:16089/metrics
@@ -111,14 +119,6 @@ virtual_total_memory 8.50089984
 > Note: the page does not set the most compact test page of CSS style
 
 
-### Features
-- It is designed as a native JavaScript class library, which can be easily integrated with React/Vue/AngularJS and other frameworks
-- It can run on Android / IOS and any other terminal that can render HTML. It can almost completely replace the shell client based on the installation program
-- Fully support lrzsz command set (implemented based on zmodem)
-- Enhanced support for mobile terminal copy, paste, fast forward, backward and other key combination command, user-friendly operation habits
-- Seamless docking Prometheus metric acquisition
-
-
 ### Primary Dependencies
 - Logging framework [go.uber.org/zap](go.uber.org/zap)
 - Widely used Web framework [github.com/gin-gonic/gin](github.com/gin-gonic/gin)
@@ -135,7 +135,7 @@ virtual_total_memory 8.50089984
 ### TODO
 - [√] Completely unify the daily output of each component, such as `gin` framework.
 - [√] Enhance the administrator functions of webconsole service, such as its own health/metrics/indicator(CPU/Mem/Network/Connections...) And more detailed indicators.
-- canvas + coss Audit screen recording function.
+- Canvas + Object Storage Audit screen recording function.
 - In order to realize the remote image UI control protocol compatible with windows RDP(Remote Desktop Protocol) based on Web, And RFB/Telnet
 
 ### Custom Development Guide
@@ -146,4 +146,6 @@ virtual_total_memory 8.50089984
 ```
 cd $WEBCONSOLE_HOME
 go run config_generator.go
+
+Successfully for pkg/config/webconsole.default.yml.go
 ```

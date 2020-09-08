@@ -1,5 +1,5 @@
 # XCloud WebConsole
-一个轻量的企业级Web的控制终端程序，汇集了大多数同类产品优点于一身，支持SSH2、(RDP/RFB/Telnet)、审计和录屏等
+一个轻量的企业级Web的控制终端程序，汇集了大多数同类产品优点于一身，支持SSH2/lrzsz、(RDP/RFB/Telnet)、审计和录屏等
 
 English version goes [here](README.md).
 
@@ -79,6 +79,14 @@ chrome://settings/security
 然后重启chrome浏览器尝试访问: https://webconsole.wl4g.debug
 
 
+### 特性
+- 它被设计成一个原生JavaScript类库，可以很容易地与React/Vue/AngularJS和其他框架集成
+- 它可以运行在 `Android iOS` 和任何其他可以呈现HTML的终端上。它几乎可以完全取代基于安装程序的shell客户端
+- 完全支持 `lrzsz` 命令集（基于zmodem实现）
+- 增强了对移动终端的复制、粘贴、快进、后退等按键组合命令的支持，用户友好的操作习惯
+- 无缝对接 prometheus 度量采集
+
+
 ### 度量及指标
 ```
 curl http://localhost:16089/metrics
@@ -116,14 +124,6 @@ virtual_total_memory 8.50089984
 > 说明：界面未设置css样式的最精简测试页面
 
 
-### 特性
-- 它被设计成一个原生JavaScript类库，可以很容易地与React/Vue/AngularJS和其他框架集成
-- 它可以运行在Android/IOS和任何其他可以呈现HTML的终端上。它几乎可以完全取代基于安装程序的shell客户端
-- 完全支持lrzsz命令集（基于zmodem实现）
-- 增强了对移动终端的复制、粘贴、快进、后退等按键组合命令的支持，用户友好的操作习惯
-- 无缝对接 prometheus 度量采集
-
-
 ### 主要依赖项目
 - 日志框架 [go.uber.org/zap](go.uber.org/zap)
 - 通用web框架 [github.com/gin-gonic/gin](github.com/gin-gonic/gin)
@@ -139,15 +139,18 @@ virtual_total_memory 8.50089984
 ### 待办清单
 - [√] 完全统一每个组件的日常输出，如“gin”框架。
 - [√] 增强webconsole服务的管理员功能，例如自身的health/metrics/indicator（CPU/Mem/Network/Connections…）和更详细的指示器
-- canvas + coss 审计录屏功能
+- Canvas + Object Storage 审计录屏功能
 - 为了实现与windows RDP（远程桌面协议）兼容的基于Web的远程图像UI控制协议, 以及RFB/Telnet等
 
 ### 自定义开发指南
 - 推荐IDE使用 VSCode 进行二次开发，因为项目根目录已包含 .vscode 编辑器配置文件
-- 修改数据库配置: resources/webconsole.yml#datasource.mysql.dbconnectstr
+- 修改数据库配置: resources/webconsole.yml#datasource.mysql.dbconnectstr，也可以使用环境变量：.vscode/launch.json => WEBCONSOLE_DATASOURCE_MYSQL_DBCONNECTSTR
 - 配置文件说明：本项目使用viper配置框架，加载优先级依次为：Set()/Flags/Env/Config/Default
 - 如果需要添加新的配置项，则必须使用config_generator.go 生成和xxx-config.go 对应的默认配置项webconsole.default.yml.go，参考命令：
+
 ```
 cd $WEBCONSOLE_HOME
 go run config_generator.go
+
+Successfully for pkg/config/webconsole.default.yml.go
 ```
