@@ -26,8 +26,8 @@ CD %BASE_DIR%
 
 SET CGO_ENABLED=0
 rem SET GOOS=darwin
-SET GOOS=linux
-rem SET GOOS=windows
+rem SET GOOS=linux
+SET GOOS=windows
 SET GOARCH=amd64
 
 IF ["%GOOS%"] EQU ["windows"] (

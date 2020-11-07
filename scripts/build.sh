@@ -22,7 +22,7 @@ cd $BASE_DIR/..
 
 export CGO_ENABLED=0
 export GOARCH=amd64
-export GOOS=windows # linux|darwin|windows
+export GOOS=linux # linux|darwin|windows
 
 if [ "$GOOS" == "windows" ]; then
   SUFFIX=".exe"
